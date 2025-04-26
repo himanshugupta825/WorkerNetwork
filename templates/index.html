@@ -14,13 +14,33 @@
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
       <a class="navbar-brand" href="/">GigWorker Match</a>
-      <div class="ms-auto">
+      <div class="ms-auto d-flex gap-2">
+        <button id="voice-guide-btn" class="accessibility-btn" aria-label="Voice guidance">
+          <span id="speaker-icon"></span> Voice Guide
+        </button>
+        <button id="visual-guide-btn" class="accessibility-btn" aria-label="Visual guide">
+          <span id="guide-icon"></span> Help
+        </button>
         <button id="theme-toggle" class="btn btn-outline-light btn-sm">
           <span id="theme-icon">🌙</span> <span id="theme-text">Dark Mode</span>
         </button>
       </div>
     </div>
   </nav>
+  
+  <!-- Visual Guide Panel -->
+  <div id="guide-panel" class="guide-panel">
+    <div class="guide-panel-header">
+      <h3>Step-by-Step Guide</h3>
+      <button id="guide-panel-close" class="guide-panel-close">&times;</button>
+    </div>
+    <div id="guide-panel-content" class="guide-panel-content">
+      <!-- Guide steps will be dynamically added here -->
+    </div>
+  </div>
+  
+  <!-- Visual cues container -->
+  <div id="visual-cues" class="visual-cues"></div>
 
   <!-- Header -->
   <header class="site-header">
@@ -208,6 +228,7 @@
 
   <!-- Bootstrap and Custom JavaScript -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="{{ url_for('static', filename='icons.js') }}"></script>
   <script src="{{ url_for('static', filename='app.js') }}"></script>
 </body>
 </html>

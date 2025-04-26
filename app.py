@@ -167,6 +167,86 @@ def get_jobs():
         logger.error(f"Error retrieving jobs: {str(e)}")
         return jsonify({"error": "An error occurred while retrieving jobs"}), 500
 
+# Voice assistance route
+@app.route('/voice-guide/<page>', methods=['GET'])
+def voice_guide(page):
+    """Generate voice guidance based on current page"""
+    import pyttsx3
+    import tempfile
+    import os
+    from flask import send_file
+    
+    # Define voice instructions for each page
+    instructions = {
+        'main': "Welcome to GigWorker Match. This page has four big buttons. The blue button on top is for applying to a job. The purple button below it is for posting a job. The light blue buttons are for viewing workers and job listings.",
+        'apply': "This is the job application form. Fill in your name, phone number, skill, and location. You can also add your experience and education if you want. Then press the red Submit button at the bottom.",
+        'post-job': "This is the job posting form. Fill in your business name, the job you're offering, payment details, and your contact number. You can also add job location and description if you want. Then press the red Post Job button at the bottom.",
+        'workers': "This page shows all available workers. Each box contains a worker's details including their name, skills, location, experience, education, and contact information.",
+        'jobs': "This page shows all available jobs. Each box contains job details including the role, business name, payment, location, description, and contact information."
+    }
+    
+    # Get the instruction for the requested page
+    instruction = instructions.get(page, "Welcome to our website. Please navigate using the buttons.")
+    
+    # Initialize the text-to-speech engine
+    engine = pyttsx3.init()
+    
+    # Create a temporary file to store the audio
+    with tempfile.NamedTemporaryFile(delete=False, suffix='.mp3') as tmp_file:
+        temp_filename = tmp_file.name
+    
+    # Save the speech as an audio file
+    engine.save_to_file(instruction, temp_filename)
+    engine.runAndWait()
+    
+    # Return the audio file
+    return send_file(temp_filename, mimetype='audio/mpeg', as_attachment=True, 
+                    download_name=f'voice-guide-{page}.mp3')
+
+# Image-based instructions endpoint
+@app.route('/visual-guide/<page>', methods=['GET'])
+def visual_guide(page):
+    """Return visual guide instructions based on page"""
+    guides = {
+        'main': {
+            'title': 'Home Page Guide',
+            'steps': [
+                {'text': 'Click "Apply for a Job" if you want to find work', 'icon': 'search-icon'},
+                {'text': 'Click "Post a Job" if you want to hire someone', 'icon': 'create-icon'},
+                {'text': 'Click "View Workers" to see available workers', 'icon': 'people-icon'},
+                {'text': 'Click "View Jobs" to see available jobs', 'icon': 'work-icon'}
+            ]
+        },
+        'apply': {
+            'title': 'Application Guide',
+            'steps': [
+                {'text': 'Fill in your name', 'icon': 'user-icon'},
+                {'text': 'Enter your phone number', 'icon': 'phone-icon'},
+                {'text': 'Enter your main skill', 'icon': 'skill-icon'},
+                {'text': 'Enter your location', 'icon': 'location-icon'},
+                {'text': 'Click the Submit button when done', 'icon': 'send-icon'}
+            ]
+        },
+        'post-job': {
+            'title': 'Post Job Guide',
+            'steps': [
+                {'text': 'Enter your business name', 'icon': 'business-icon'},
+                {'text': 'Enter the job role', 'icon': 'role-icon'},
+                {'text': 'Enter payment details', 'icon': 'money-icon'},
+                {'text': 'Enter your contact number', 'icon': 'phone-icon'},
+                {'text': 'Click the Post Job button when done', 'icon': 'send-icon'}
+            ]
+        }
+    }
+    
+    # Get the guide for the requested page
+    guide = guides.get(page, {
+        'title': 'Website Guide',
+        'steps': [{'text': 'Use the buttons to navigate', 'icon': 'help-icon'}]
+    })
+    
+    return jsonify(guide)
+
 # Error handlers
 @app.errorhandler(404)
 def not_found(error):

@@ -26,7 +26,19 @@ document.addEventListener('DOMContentLoaded', function() {
   const themeToggleBtn = document.getElementById('theme-toggle');
   const themeIcon = document.getElementById('theme-icon');
   const themeText = document.getElementById('theme-text');
-  const htmlElement = document.getElementById('html-element');
+  const htmlElement = document.documentElement;
+  
+  // Accessibility elements
+  const voiceGuideBtn = document.getElementById('voice-guide-btn');
+  const visualGuideBtn = document.getElementById('visual-guide-btn');
+  const guidePanel = document.getElementById('guide-panel');
+  const guidePanelClose = document.getElementById('guide-panel-close');
+  const guidePanelContent = document.getElementById('guide-panel-content');
+  const visualCues = document.getElementById('visual-cues');
+  
+  // Set SVG icons
+  document.getElementById('speaker-icon').innerHTML = ICONS['speaker-icon'];
+  document.getElementById('guide-icon').innerHTML = ICONS['guide-icon'];
   
   // Add event listeners to main buttons
   document.getElementById('apply-button').addEventListener('click', function() {
@@ -104,6 +116,151 @@ document.addEventListener('DOMContentLoaded', function() {
       localStorage.setItem('theme', 'dark');
     }
   });
+  
+  // Voice guidance functionality
+  voiceGuideBtn.addEventListener('click', function() {
+    // Determine current page
+    let currentPage = 'main';
+    if (!mainPage.classList.contains('d-none')) {
+      currentPage = 'main';
+    } else if (!applyPage.classList.contains('d-none')) {
+      currentPage = 'apply';
+    } else if (!postJobPage.classList.contains('d-none')) {
+      currentPage = 'post-job';
+    } else if (!workersPage.classList.contains('d-none')) {
+      currentPage = 'workers';
+    } else if (!jobsPage.classList.contains('d-none')) {
+      currentPage = 'jobs';
+    }
+    
+    // Create audio element and play voice guide
+    const audio = new Audio(`/voice-guide/${currentPage}`);
+    audio.play();
+  });
+  
+  // Visual guide functionality
+  visualGuideBtn.addEventListener('click', function() {
+    // Determine current page
+    let currentPage = 'main';
+    if (!mainPage.classList.contains('d-none')) {
+      currentPage = 'main';
+    } else if (!applyPage.classList.contains('d-none')) {
+      currentPage = 'apply';
+    } else if (!postJobPage.classList.contains('d-none')) {
+      currentPage = 'post-job';
+    } else if (!workersPage.classList.contains('d-none')) {
+      currentPage = 'workers';
+    } else if (!jobsPage.classList.contains('d-none')) {
+      currentPage = 'jobs';
+    }
+    
+    // Fetch visual guide data
+    fetch(`/visual-guide/${currentPage}`)
+      .then(response => response.json())
+      .then(data => {
+        // Update guide panel content
+        guidePanelContent.innerHTML = '';
+        
+        // Add title
+        const title = document.createElement('h3');
+        title.className = 'mb-4';
+        title.textContent = data.title;
+        guidePanelContent.appendChild(title);
+        
+        // Add steps
+        data.steps.forEach(step => {
+          const stepDiv = document.createElement('div');
+          stepDiv.className = 'guide-step';
+          
+          const iconDiv = document.createElement('div');
+          iconDiv.className = 'guide-step-icon';
+          iconDiv.innerHTML = ICONS[step.icon] || ICONS['help-icon'];
+          
+          const textDiv = document.createElement('div');
+          textDiv.className = 'guide-step-text';
+          textDiv.textContent = step.text;
+          
+          stepDiv.appendChild(iconDiv);
+          stepDiv.appendChild(textDiv);
+          guidePanelContent.appendChild(stepDiv);
+        });
+        
+        // Show the guide panel
+        guidePanel.classList.add('active');
+        
+        // Add visual cues/arrows to the page
+        addVisualCues(currentPage);
+      })
+      .catch(error => {
+        console.error('Error fetching visual guide:', error);
+      });
+  });
+  
+  // Close guide panel
+  guidePanelClose.addEventListener('click', function() {
+    guidePanel.classList.remove('active');
+    // Remove visual cues
+    visualCues.classList.remove('active');
+    visualCues.innerHTML = '';
+  });
+  
+  // Function to add visual cues based on page
+  function addVisualCues(page) {
+    visualCues.innerHTML = '';
+    visualCues.classList.add('active');
+    
+    // Different cues for different pages
+    switch(page) {
+      case 'main':
+        // Add arrows pointing to main buttons
+        addArrow(document.getElementById('apply-button'), 'top');
+        addArrow(document.getElementById('post-button'), 'top');
+        break;
+      case 'apply':
+        // Add arrow pointing to first form field
+        addArrow(document.getElementById('apply-name'), 'top');
+        break;
+      case 'post-job':
+        // Add arrow pointing to first form field
+        addArrow(document.getElementById('post-business'), 'top');
+        break;
+    }
+  }
+  
+  // Function to add a pulsing arrow near an element
+  function addArrow(element, position) {
+    if (!element) return;
+    
+    const rect = element.getBoundingClientRect();
+    const arrow = document.createElement('div');
+    arrow.className = 'pulse-arrow';
+    arrow.innerHTML = ICONS['arrow-down'];
+    
+    // Position the arrow
+    switch(position) {
+      case 'top':
+        arrow.style.top = `${rect.top - 40}px`;
+        arrow.style.left = `${rect.left + rect.width / 2 - 12}px`;
+        break;
+      case 'right':
+        arrow.style.top = `${rect.top + rect.height / 2 - 12}px`;
+        arrow.style.left = `${rect.right + 10}px`;
+        arrow.style.transform = 'rotate(-90deg)';
+        break;
+      case 'bottom':
+        arrow.style.top = `${rect.bottom + 10}px`;
+        arrow.style.left = `${rect.left + rect.width / 2 - 12}px`;
+        arrow.style.transform = 'rotate(180deg)';
+        break;
+      case 'left':
+        arrow.style.top = `${rect.top + rect.height / 2 - 12}px`;
+        arrow.style.left = `${rect.left - 40}px`;
+        arrow.style.transform = 'rotate(90deg)';
+        break;
+    }
+    
+    visualCues.appendChild(arrow);
+  }
   
   // Check for saved theme preference
   const savedTheme = localStorage.getItem('theme');
