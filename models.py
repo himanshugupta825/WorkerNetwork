@@ -1,8 +1,37 @@
 from datetime import datetime
-from sqlalchemy import Column, String, Integer, DateTime, Text
+from sqlalchemy import Column, String, Integer, DateTime, Text, Boolean
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
 
 db = SQLAlchemy()
+
+class User(UserMixin, db.Model):
+    __tablename__ = 'users'
+    
+    id = Column(String(36), primary_key=True)
+    username = Column(String(100), unique=True, nullable=False)
+    email = Column(String(120), unique=True, nullable=False)
+    password_hash = Column(String(256), nullable=False)
+    is_worker = Column(Boolean, default=False)
+    is_employer = Column(Boolean, default=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+        
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'username': self.username,
+            'email': self.email,
+            'is_worker': self.is_worker,
+            'is_employer': self.is_employer,
+            'created_at': self.created_at.isoformat() if self.created_at else None
+        }
 
 class Worker(db.Model):
     __tablename__ = 'workers'

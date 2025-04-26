@@ -2,11 +2,12 @@ import os
 import logging
 import uuid
 from datetime import datetime
-from flask import Flask, request, jsonify, render_template, send_file
+from flask import Flask, request, jsonify, render_template, send_file, session, redirect, url_for, flash
 from flask_cors import CORS
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 import json
-from validators import validate_worker_data, validate_job_data
-from models import db, Worker, Job
+from validators import validate_worker_data, validate_job_data, validate_registration_data, validate_login_data
+from models import db, Worker, Job, User
 import voice_search
 
 # Set up logging

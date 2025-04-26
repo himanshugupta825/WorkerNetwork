@@ -99,3 +99,81 @@ def validate_job_data(data):
     
     # If we get here, the data is valid
     return None
+
+def validate_registration_data(data):
+    """
+    Validate user registration data
+    Returns None if valid, error message if invalid
+    """
+    # Required fields
+    required_fields = ["username", "email", "password", "confirm_password"]
+    
+    # Check for required fields
+    for field in required_fields:
+        if field not in data or not data[field]:
+            return f"Missing required field: {field}"
+    
+    # Validate username (should be string)
+    if not isinstance(data["username"], str):
+        return "Username must be a string"
+    
+    # Username should have reasonable length
+    if len(data["username"]) < 3 or len(data["username"]) > 100:
+        return "Username must be between 3 and 100 characters"
+    
+    # Validate email (basic format check)
+    if not isinstance(data["email"], str):
+        return "Email must be a string"
+    
+    # Check if email contains @ and .
+    if "@" not in data["email"] or "." not in data["email"].split("@")[1]:
+        return "Invalid email format"
+    
+    # Validate password (should be string)
+    if not isinstance(data["password"], str):
+        return "Password must be a string"
+    
+    # Password should have reasonable length
+    if len(data["password"]) < 8:
+        return "Password must be at least 8 characters long"
+    
+    # Check if passwords match
+    if data["password"] != data["confirm_password"]:
+        return "Passwords do not match"
+    
+    # Validate user type (optional)
+    if "user_type" in data:
+        valid_types = ["worker", "employer", "both"]
+        if data["user_type"] not in valid_types:
+            return f"User type must be one of: {', '.join(valid_types)}"
+    
+    # If we get here, the data is valid
+    return None
+    
+def validate_login_data(data):
+    """
+    Validate user login data
+    Returns None if valid, error message if invalid
+    """
+    # Required fields
+    required_fields = ["email", "password"]
+    
+    # Check for required fields
+    for field in required_fields:
+        if field not in data or not data[field]:
+            return f"Missing required field: {field}"
+    
+    # Validate email (should be string)
+    if not isinstance(data["email"], str):
+        return "Email must be a string"
+    
+    # Check if email contains @ and .
+    if "@" not in data["email"] or "." not in data["email"].split("@")[1]:
+        return "Invalid email format"
+    
+    # Validate password (should be string)
+    if not isinstance(data["password"], str):
+        return "Password must be a string"
+    
+    # If we get here, the data is valid
+    return None

@@ -13,4 +13,7 @@ dependencies = [
     "sqlalchemy>=2.0.40",
     "openai>=1.76.0",
     "pyttsx3>=2.98",
+    "flask-login>=0.6.3",
+    "flask-wtf>=1.2.2",
+    "werkzeug>=3.1.3",
 ]
