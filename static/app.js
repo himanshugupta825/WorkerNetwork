@@ -39,6 +39,21 @@ document.addEventListener('DOMContentLoaded', function() {
   // Set SVG icons
   document.getElementById('speaker-icon').innerHTML = ICONS['speaker-icon'];
   document.getElementById('guide-icon').innerHTML = ICONS['guide-icon'];
+  document.getElementById('mic-button-icon').innerHTML = ICONS['mic-icon'];
+  
+  // Voice search elements
+  const voiceSearchBtn = document.getElementById('voice-search-btn');
+  const voiceStatusText = document.getElementById('voice-status-text');
+  const voiceTranscript = document.getElementById('voice-transcript');
+  const voiceResponseContainer = document.getElementById('voice-response-container');
+  const voiceResponseText = document.getElementById('voice-response-text');
+  const playResponseBtn = document.getElementById('play-response-btn');
+  const voiceSearchResultsPage = document.getElementById('voice-search-results-page');
+  const voiceSearchSummaryText = document.getElementById('voice-search-summary-text');
+  const voiceSearchResults = document.getElementById('voice-search-results');
+  const voiceSearchLoading = document.getElementById('voice-search-loading');
+  const noResultsMessage = document.getElementById('no-results-message');
+  const voiceSearchError = document.getElementById('voice-search-error');
   
   // Add event listeners to main buttons
   document.getElementById('apply-button').addEventListener('click', function() {
@@ -519,5 +534,174 @@ document.addEventListener('DOMContentLoaded', function() {
     `;
     
     return card;
+  }
+  
+  // Web Speech API voice recognition
+  let recognition;
+  let isListening = false;
+  
+  // Check if browser supports speech recognition
+  if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+    // Initialize speech recognition
+    recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognition.continuous = false;
+    recognition.lang = 'en-US';
+    recognition.interimResults = true;
+    recognition.maxAlternatives = 1;
+    
+    // Handle speech recognition results
+    recognition.onresult = function(event) {
+      const transcript = event.results[0][0].transcript;
+      voiceTranscript.textContent = transcript;
+      
+      // If final result
+      if (event.results[0].isFinal) {
+        processVoiceCommand(transcript);
+      }
+    };
+    
+    // Handle speech recognition end
+    recognition.onend = function() {
+      voiceSearchBtn.classList.remove('listening');
+      isListening = false;
+      voiceStatusText.textContent = 'Click the microphone and speak';
+    };
+    
+    // Handle speech recognition errors
+    recognition.onerror = function(event) {
+      console.error('Speech recognition error:', event.error);
+      voiceStatusText.textContent = 'Error: ' + event.error;
+      voiceSearchBtn.classList.remove('listening');
+      isListening = false;
+    };
+    
+    // Add click event for voice search button
+    voiceSearchBtn.addEventListener('click', function() {
+      if (!isListening) {
+        // Start listening
+        voiceSearchBtn.classList.add('listening');
+        voiceStatusText.textContent = 'Listening...';
+        voiceTranscript.textContent = '';
+        voiceResponseContainer.classList.add('d-none');
+        
+        // Start recognition
+        recognition.start();
+        isListening = true;
+      } else {
+        // Stop listening
+        recognition.stop();
+        voiceSearchBtn.classList.remove('listening');
+        voiceStatusText.textContent = 'Click the microphone and speak';
+        isListening = false;
+      }
+    });
+    
+    // Add click event for play response button
+    playResponseBtn.addEventListener('click', function() {
+      const responseText = voiceResponseText.textContent;
+      
+      // Send the text to the server for conversion to speech
+      fetch('/voice-response', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ text: responseText })
+      })
+      .then(response => response.blob())
+      .then(blob => {
+        // Create audio from the blob
+        const audioUrl = URL.createObjectURL(blob);
+        const audio = new Audio(audioUrl);
+        audio.play();
+      })
+      .catch(error => {
+        console.error('Error playing voice response:', error);
+      });
+    });
+  } else {
+    // Browser doesn't support speech recognition
+    voiceSearchBtn.disabled = true;
+    voiceStatusText.textContent = 'Voice search not supported in this browser';
+  }
+  
+  // Function to process voice command
+  function processVoiceCommand(command) {
+    // Show loading status
+    voiceStatusText.textContent = 'Processing your request...';
+    
+    // Send voice command to server
+    fetch('/voice-search', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ voice_command: command })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.error) {
+        // Show error
+        voiceStatusText.textContent = 'Error: ' + data.error;
+      } else {
+        // Show voice response
+        voiceResponseText.textContent = data.voice_response;
+        voiceResponseContainer.classList.remove('d-none');
+        
+        // If there are jobs, navigate to results page
+        if (data.matched_jobs && data.matched_jobs.length > 0) {
+          // Show the results on a new page
+          showVoiceSearchResults(data);
+        } else if (data.total_matches === 0) {
+          // No results found
+          voiceSearchSummaryText.textContent = 'No jobs found matching your search.';
+          voiceStatusText.textContent = 'Done! Try another search.';
+        }
+      }
+    })
+    .catch(error => {
+      console.error('Error processing voice command:', error);
+      voiceStatusText.textContent = 'Error processing your request. Please try again.';
+    });
+  }
+  
+  // Function to show voice search results
+  function showVoiceSearchResults(data) {
+    // Hide main page
+    mainPage.classList.add('d-none');
+    // Show voice search results page
+    voiceSearchResultsPage.classList.remove('d-none');
+    
+    // Update summary text
+    voiceSearchSummaryText.textContent = data.voice_response;
+    
+    // Clear previous results
+    voiceSearchResults.innerHTML = '';
+    
+    // Show loading spinner
+    voiceSearchLoading.classList.remove('d-none');
+    noResultsMessage.classList.add('d-none');
+    voiceSearchError.classList.add('d-none');
+    
+    try {
+      // Hide loading spinner
+      voiceSearchLoading.classList.add('d-none');
+      
+      if (data.matched_jobs && data.matched_jobs.length > 0) {
+        // Create job cards for each result
+        data.matched_jobs.forEach(job => {
+          const jobCard = createJobCard(job);
+          voiceSearchResults.appendChild(jobCard);
+        });
+      } else {
+        // Show no results message
+        noResultsMessage.classList.remove('d-none');
+      }
+    } catch (error) {
+      console.error('Error displaying search results:', error);
+      voiceSearchLoading.classList.add('d-none');
+      voiceSearchError.textContent = 'Error displaying search results. Please try again.';
+      voiceSearchError.classList.remove('d-none');
+    }
   }
 });
