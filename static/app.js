@@ -704,4 +704,244 @@ document.addEventListener('DOMContentLoaded', function() {
       voiceSearchError.classList.remove('d-none');
     }
   }
+  
+  // Authentication Elements
+  const authButtons = document.getElementById('auth-buttons');
+  const userInfo = document.getElementById('user-info');
+  const usernameDisplay = document.getElementById('username-display');
+  const loginForm = document.getElementById('login-form');
+  const registerForm = document.getElementById('register-form');
+  const loginError = document.getElementById('login-error');
+  const registerError = document.getElementById('register-error');
+  const logoutLink = document.getElementById('logout-link');
+  const profileLink = document.getElementById('profile-link');
+  
+  // Profile Modal Elements
+  const profileUsername = document.getElementById('profile-username');
+  const profileEmail = document.getElementById('profile-email');
+  const profileType = document.getElementById('profile-type');
+  const profileCreated = document.getElementById('profile-created');
+  
+  // Check if user is already logged in
+  checkAuthStatus();
+  
+  // Function to check authentication status
+  function checkAuthStatus() {
+    fetch('/user')
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        } else if (response.status === 401) {
+          // User is not logged in
+          showAuthButtons();
+          return null;
+        } else {
+          throw new Error('Failed to check auth status');
+        }
+      })
+      .then(data => {
+        if (data && data.user) {
+          // User is logged in
+          showUserInfo(data.user);
+          
+          // Update profile modal with user data
+          updateProfileModal(data.user);
+        }
+      })
+      .catch(error => {
+        console.error('Auth status check error:', error);
+        showAuthButtons();
+      });
+  }
+  
+  // Function to show auth buttons (login/register)
+  function showAuthButtons() {
+    authButtons.classList.remove('d-none');
+    userInfo.classList.add('d-none');
+  }
+  
+  // Function to show user info when logged in
+  function showUserInfo(user) {
+    authButtons.classList.add('d-none');
+    userInfo.classList.remove('d-none');
+    usernameDisplay.textContent = user.username;
+  }
+  
+  // Function to update profile modal with user data
+  function updateProfileModal(user) {
+    profileUsername.textContent = user.username;
+    profileEmail.textContent = user.email;
+    
+    // Determine account type
+    let accountType = '';
+    if (user.is_worker && user.is_employer) {
+      accountType = 'Worker & Employer';
+    } else if (user.is_worker) {
+      accountType = 'Worker';
+    } else if (user.is_employer) {
+      accountType = 'Employer';
+    } else {
+      accountType = 'Standard User';
+    }
+    
+    profileType.textContent = accountType;
+    
+    // Format the created_at date
+    if (user.created_at) {
+      const date = new Date(user.created_at);
+      profileCreated.textContent = date.toLocaleDateString();
+    } else {
+      profileCreated.textContent = 'Unknown';
+    }
+  }
+  
+  // Login form submission
+  if (loginForm) {
+    loginForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      // Hide previous errors
+      loginError.classList.add('d-none');
+      
+      // Get form data
+      const formData = {
+        email: document.getElementById('login-email').value,
+        password: document.getElementById('login-password').value
+      };
+      
+      // Send login request
+      fetch('/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.error) {
+          // Show error message
+          loginError.textContent = data.error;
+          loginError.classList.remove('d-none');
+        } else {
+          // Login successful
+          // Close modal
+          const loginModal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
+          loginModal.hide();
+          
+          // Show user info
+          showUserInfo(data);
+          
+          // Update profile modal
+          updateProfileModal(data);
+          
+          // Reset form
+          loginForm.reset();
+        }
+      })
+      .catch(error => {
+        console.error('Login error:', error);
+        loginError.textContent = 'An error occurred during login. Please try again.';
+        loginError.classList.remove('d-none');
+      });
+    });
+  }
+  
+  // Register form submission
+  if (registerForm) {
+    registerForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      // Hide previous errors
+      registerError.classList.add('d-none');
+      
+      // Get form data
+      const password = document.getElementById('register-password').value;
+      const confirmPassword = document.getElementById('register-confirm-password').value;
+      
+      // Check if passwords match
+      if (password !== confirmPassword) {
+        registerError.textContent = 'Passwords do not match';
+        registerError.classList.remove('d-none');
+        return;
+      }
+      
+      // Get selected user type
+      const userType = document.querySelector('input[name="user-type"]:checked').value;
+      
+      const formData = {
+        username: document.getElementById('register-username').value,
+        email: document.getElementById('register-email').value,
+        password: password,
+        confirm_password: confirmPassword,
+        user_type: userType
+      };
+      
+      // Send registration request
+      fetch('/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.error) {
+          // Show error message
+          registerError.textContent = data.error;
+          registerError.classList.remove('d-none');
+        } else {
+          // Registration successful
+          // Close modal
+          const registerModal = bootstrap.Modal.getInstance(document.getElementById('registerModal'));
+          registerModal.hide();
+          
+          // Show user info
+          showUserInfo(data);
+          
+          // Reset form
+          registerForm.reset();
+          
+          // Show welcome message
+          alert('Welcome to GigWorker Match! Your account has been created successfully.');
+        }
+      })
+      .catch(error => {
+        console.error('Registration error:', error);
+        registerError.textContent = 'An error occurred during registration. Please try again.';
+        registerError.classList.remove('d-none');
+      });
+    });
+  }
+  
+  // Logout functionality
+  if (logoutLink) {
+    logoutLink.addEventListener('click', function(e) {
+      e.preventDefault();
+      
+      fetch('/logout', {
+        method: 'POST'
+      })
+      .then(response => response.json())
+      .then(data => {
+        // Show login/register buttons
+        showAuthButtons();
+      })
+      .catch(error => {
+        console.error('Logout error:', error);
+      });
+    });
+  }
+  
+  // Profile link
+  if (profileLink) {
+    profileLink.addEventListener('click', function(e) {
+      e.preventDefault();
+      
+      // Show profile modal
+      const profileModal = new bootstrap.Modal(document.getElementById('profileModal'));
+      profileModal.show();
+    });
+  }
 });
