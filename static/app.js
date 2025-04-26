@@ -706,7 +706,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   
   // Authentication Elements
-  const authButtons = document.getElementById('auth-buttons');
   const userInfo = document.getElementById('user-info');
   const usernameDisplay = document.getElementById('username-display');
   const loginForm = document.getElementById('login-form');
@@ -758,9 +757,8 @@ document.addEventListener('DOMContentLoaded', function() {
   const welcomeSection = document.getElementById('welcome-section');
   const mainPage = document.getElementById('main-page');
   
-  // Function to show auth buttons (login/register)
+  // Function to show welcome screen (when not logged in)
   function showAuthButtons() {
-    authButtons.classList.remove('d-none');
     userInfo.classList.add('d-none');
     
     // Show welcome section, hide main page
@@ -774,7 +772,6 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Function to show user info when logged in
   function showUserInfo(user) {
-    authButtons.classList.add('d-none');
     userInfo.classList.remove('d-none');
     usernameDisplay.textContent = user.username;
     
