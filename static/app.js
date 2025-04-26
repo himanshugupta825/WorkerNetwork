@@ -754,10 +754,22 @@ document.addEventListener('DOMContentLoaded', function() {
       });
   }
   
+  // Reference welcome section and main page
+  const welcomeSection = document.getElementById('welcome-section');
+  const mainPage = document.getElementById('main-page');
+  
   // Function to show auth buttons (login/register)
   function showAuthButtons() {
     authButtons.classList.remove('d-none');
     userInfo.classList.add('d-none');
+    
+    // Show welcome section, hide main page
+    if (welcomeSection) {
+      welcomeSection.classList.remove('d-none');
+    }
+    if (mainPage) {
+      mainPage.classList.add('d-none');
+    }
   }
   
   // Function to show user info when logged in
@@ -765,6 +777,14 @@ document.addEventListener('DOMContentLoaded', function() {
     authButtons.classList.add('d-none');
     userInfo.classList.remove('d-none');
     usernameDisplay.textContent = user.username;
+    
+    // Hide welcome section, show main page
+    if (welcomeSection) {
+      welcomeSection.classList.add('d-none');
+    }
+    if (mainPage) {
+      mainPage.classList.remove('d-none');
+    }
   }
   
   // Function to update profile modal with user data

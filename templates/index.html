@@ -17,16 +17,6 @@
     <div class="container">
       <a class="navbar-brand" href="/">GigWorker Match</a>
       <div class="ms-auto d-flex gap-2">
-        <!-- Auth buttons (shown when logged out) -->
-        <div id="auth-buttons" class="d-flex gap-2">
-          <a id="login-btn" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#loginModal">
-            <i class="bi bi-box-arrow-in-right"></i> Login
-          </a>
-          <a id="register-btn" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#registerModal">
-            <i class="bi bi-person-plus"></i> Sign Up
-          </a>
-        </div>
-        
         <!-- User info (shown when logged in) -->
         <div id="user-info" class="d-none d-flex gap-2 align-items-center">
           <span id="username-display" class="text-light me-2 fw-bold"></span>
@@ -69,57 +59,147 @@
   <!-- Visual cues container -->
   <div id="visual-cues" class="visual-cues"></div>
 
-  <!-- Header -->
-  <header class="site-header">
-    <div class="container">
-      <h1>GigWorker Match</h1>
-      <p>Connect workers with local jobs - simple, fast, and reliable!</p>
-    </div>
-  </header>
-
-  <!-- Main page with buttons -->
-  <div class="container" id="main-page">
-    <div class="voice-search-container mb-4">
-      <div class="card voice-search-card">
-        <div class="card-body">
-          <h3 class="card-title text-center mb-3">Find Jobs with Voice</h3>
-          <div class="d-flex justify-content-center align-items-center gap-3">
-            <button id="voice-search-btn" class="btn btn-lg btn-voice">
-              <span id="mic-button-icon"></span>
+  <!-- Login Welcome Section -->
+  <div class="container" id="welcome-section">
+    <div class="row justify-content-center align-items-center min-vh-75 py-5">
+      <div class="col-md-6 text-center mb-5">
+        <div class="welcome-card">
+          <h1 class="display-4 mb-3">GigWorker Match</h1>
+          <p class="lead mb-4">Connect workers with local jobs - simple, fast, and reliable!</p>
+          
+          <div class="d-grid gap-3 col-md-8 mx-auto mb-4">
+            <button class="btn btn-primary btn-lg py-3" data-bs-toggle="modal" data-bs-target="#loginModal">
+              <i class="bi bi-box-arrow-in-right me-2 fs-4"></i> Login
             </button>
-            <div class="voice-status">
-              <div id="voice-status-text">Click the microphone and speak</div>
-              <div id="voice-transcript" class="voice-transcript"></div>
-            </div>
+            <button class="btn btn-success btn-lg py-3" data-bs-toggle="modal" data-bs-target="#registerModal">
+              <i class="bi bi-person-plus me-2 fs-4"></i> Create Account
+            </button>
           </div>
-          <div class="text-center mt-3">
-            <small class="text-muted">Try saying: "Find construction jobs" or "Jobs in downtown"</small>
-          </div>
-          <div id="voice-response-container" class="mt-3 d-none">
-            <div class="alert alert-info">
-              <p id="voice-response-text"></p>
-              <button id="play-response-btn" class="btn btn-sm btn-primary mt-2">
-                <span class="me-1">🔊</span> Play Response
-              </button>
+          
+          <p class="text-muted">Create an account or login to get started</p>
+        </div>
+      </div>
+      
+      <div class="col-md-6">
+        <div class="card mb-4 features-card">
+          <div class="card-body">
+            <h2 class="card-title text-center mb-4"><i class="bi bi-megaphone"></i> Platform Features</h2>
+            <div class="list-group">
+              <div class="list-group-item">
+                <div class="d-flex w-100 align-items-center">
+                  <i class="bi bi-mic-fill text-primary me-3 fs-4"></i>
+                  <div>
+                    <h5 class="mb-1">Voice Search</h5>
+                    <p class="mb-1">Find jobs using simple voice commands</p>
+                  </div>
+                </div>
+              </div>
+              <div class="list-group-item">
+                <div class="d-flex w-100 align-items-center">
+                  <i class="bi bi-clipboard-check text-primary me-3 fs-4"></i>
+                  <div>
+                    <h5 class="mb-1">Easy Applications</h5>
+                    <p class="mb-1">Simple forms to apply for jobs</p>
+                  </div>
+                </div>
+              </div>
+              <div class="list-group-item">
+                <div class="d-flex w-100 align-items-center">
+                  <i class="bi bi-building text-primary me-3 fs-4"></i>
+                  <div>
+                    <h5 class="mb-1">Post Jobs</h5>
+                    <p class="mb-1">Easily post job openings for your business</p>
+                  </div>
+                </div>
+              </div>
+              <div class="list-group-item">
+                <div class="d-flex w-100 align-items-center">
+                  <i class="bi bi-lightbulb text-primary me-3 fs-4"></i>
+                  <div>
+                    <h5 class="mb-1">Guided Interface</h5>
+                    <p class="mb-1">Voice and visual guides to help at every step</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-    
-    <div class="main-buttons">
-      <button id="apply-button" class="btn btn-primary btn-lg btn-main btn-apply">
-        <span class="me-2">✓</span> Apply for a Job
-      </button>
-      <button id="post-button" class="btn btn-primary btn-lg btn-main btn-post">
-        <span class="me-2">+</span> Post a Job
-      </button>
-      <button id="view-workers-button" class="btn btn-info btn-lg btn-main btn-view">
-        <span class="me-2">👤</span> View Workers
-      </button>
-      <button id="view-jobs-button" class="btn btn-info btn-lg btn-main btn-view">
-        <span class="me-2">📋</span> View Jobs
-      </button>
+  </div>
+
+  <!-- Main page with buttons (hidden until logged in) -->
+  <div class="container d-none" id="main-page">
+    <div class="row justify-content-center">
+      <div class="col-md-10">
+        <div class="voice-search-container mb-4">
+          <div class="card voice-search-card">
+            <div class="card-body">
+              <h3 class="card-title text-center mb-3"><i class="bi bi-mic-fill me-2"></i>Find Jobs with Voice</h3>
+              <div class="d-flex justify-content-center align-items-center gap-3">
+                <button id="voice-search-btn" class="btn btn-lg btn-voice">
+                  <span id="mic-button-icon"></span>
+                </button>
+                <div class="voice-status">
+                  <div id="voice-status-text">Click the microphone and speak</div>
+                  <div id="voice-transcript" class="voice-transcript"></div>
+                </div>
+              </div>
+              <div class="text-center mt-3">
+                <small class="text-muted">Try saying: "Find construction jobs" or "Jobs in downtown"</small>
+              </div>
+              <div id="voice-response-container" class="mt-3 d-none">
+                <div class="alert alert-info">
+                  <p id="voice-response-text"></p>
+                  <button id="play-response-btn" class="btn btn-sm btn-primary mt-2">
+                    <span class="me-1">🔊</span> Play Response
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="row main-buttons">
+          <div class="col-md-6 mb-3">
+            <div class="card h-100">
+              <div class="card-body text-center">
+                <i class="bi bi-person-badge fs-1 text-primary mb-3"></i>
+                <h4>Looking for Work?</h4>
+                <p>Submit your skills and find jobs that match your profile</p>
+                <button id="apply-button" class="btn btn-primary btn-lg mt-2">
+                  <i class="bi bi-clipboard-check me-2"></i> Apply for a Job
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 mb-3">
+            <div class="card h-100">
+              <div class="card-body text-center">
+                <i class="bi bi-building fs-1 text-primary mb-3"></i>
+                <h4>Hiring Workers?</h4>
+                <p>Post your job openings and find qualified workers</p>
+                <button id="post-button" class="btn btn-primary btn-lg mt-2">
+                  <i class="bi bi-plus-circle me-2"></i> Post a Job
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="row mt-3 mb-5">
+          <div class="col-md-6 mb-3">
+            <button id="view-workers-button" class="btn btn-info btn-lg w-100 py-3">
+              <i class="bi bi-people me-2"></i> View Available Workers
+            </button>
+          </div>
+          <div class="col-md-6 mb-3">
+            <button id="view-jobs-button" class="btn btn-info btn-lg w-100 py-3">
+              <i class="bi bi-briefcase me-2"></i> Browse Job Listings
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   
