@@ -25,7 +25,7 @@
     </div>
   </header>
 
-  <!-- Main page with two buttons -->
+  <!-- Main page with buttons -->
   <div class="container" id="main-page">
     <div class="main-buttons">
       <button id="apply-button" class="btn btn-primary btn-lg btn-main btn-apply">
@@ -33,6 +33,12 @@
       </button>
       <button id="post-button" class="btn btn-primary btn-lg btn-main btn-post">
         <span class="me-2">+</span> Post a Job
+      </button>
+      <button id="view-workers-button" class="btn btn-info btn-lg btn-main btn-view">
+        <span class="me-2">👤</span> View Workers
+      </button>
+      <button id="view-jobs-button" class="btn btn-info btn-lg btn-main btn-view">
+        <span class="me-2">📋</span> View Jobs
       </button>
     </div>
   </div>
@@ -139,6 +145,58 @@
       
       <div class="error-message" id="post-error">
         Error message will appear here
+      </div>
+    </div>
+  </div>
+
+  <!-- View workers page (hidden by default) -->
+  <div class="container d-none" id="workers-page">
+    <button class="btn btn-outline-secondary btn-back">
+      <span class="me-2">←</span> Back to Main
+    </button>
+    
+    <div class="content-container">
+      <h2>Available Workers</h2>
+      <div class="spinner-border text-primary" role="status" id="workers-loading">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      
+      <div id="workers-container" class="cards-container">
+        <!-- Worker cards will be populated here -->
+      </div>
+      
+      <div id="no-workers-message" class="alert alert-info d-none">
+        <p>No workers have applied yet. Check back later!</p>
+      </div>
+      
+      <div id="workers-error" class="alert alert-danger d-none">
+        Error loading workers
+      </div>
+    </div>
+  </div>
+
+  <!-- View jobs page (hidden by default) -->
+  <div class="container d-none" id="jobs-page">
+    <button class="btn btn-outline-secondary btn-back">
+      <span class="me-2">←</span> Back to Main
+    </button>
+    
+    <div class="content-container">
+      <h2>Job Listings</h2>
+      <div class="spinner-border text-primary" role="status" id="jobs-loading">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      
+      <div id="jobs-container" class="cards-container">
+        <!-- Job cards will be populated here -->
+      </div>
+      
+      <div id="no-jobs-message" class="alert alert-info d-none">
+        <p>No jobs have been posted yet. Check back later!</p>
+      </div>
+      
+      <div id="jobs-error" class="alert alert-danger d-none">
+        Error loading jobs
       </div>
     </div>
   </div>
