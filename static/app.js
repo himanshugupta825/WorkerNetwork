@@ -22,6 +22,12 @@ document.addEventListener('DOMContentLoaded', function() {
   const workersError = document.getElementById('workers-error');
   const jobsError = document.getElementById('jobs-error');
   
+  // Theme toggle elements
+  const themeToggleBtn = document.getElementById('theme-toggle');
+  const themeIcon = document.getElementById('theme-icon');
+  const themeText = document.getElementById('theme-text');
+  const htmlElement = document.getElementById('html-element');
+  
   // Add event listeners to main buttons
   document.getElementById('apply-button').addEventListener('click', function() {
     mainPage.classList.add('d-none');
@@ -71,6 +77,53 @@ document.addEventListener('DOMContentLoaded', function() {
       postJobForm.reset();
     });
   });
+  
+  // Theme toggle functionality
+  themeToggleBtn.addEventListener('click', function() {
+    const currentTheme = htmlElement.getAttribute('data-bs-theme');
+    
+    if (currentTheme === 'dark') {
+      // Switch to light theme
+      htmlElement.setAttribute('data-bs-theme', 'light');
+      themeIcon.textContent = '☀️';
+      themeText.textContent = 'Light Mode';
+      themeToggleBtn.classList.remove('btn-outline-light');
+      themeToggleBtn.classList.add('btn-outline-dark');
+      
+      // Save theme preference in local storage
+      localStorage.setItem('theme', 'light');
+    } else {
+      // Switch to dark theme
+      htmlElement.setAttribute('data-bs-theme', 'dark');
+      themeIcon.textContent = '🌙';
+      themeText.textContent = 'Dark Mode';
+      themeToggleBtn.classList.remove('btn-outline-dark');
+      themeToggleBtn.classList.add('btn-outline-light');
+      
+      // Save theme preference in local storage
+      localStorage.setItem('theme', 'dark');
+    }
+  });
+  
+  // Check for saved theme preference
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme) {
+    if (savedTheme === 'light') {
+      // Apply light theme
+      htmlElement.setAttribute('data-bs-theme', 'light');
+      themeIcon.textContent = '☀️';
+      themeText.textContent = 'Light Mode';
+      themeToggleBtn.classList.remove('btn-outline-light');
+      themeToggleBtn.classList.add('btn-outline-dark');
+    } else {
+      // Apply dark theme (default)
+      htmlElement.setAttribute('data-bs-theme', 'dark');
+      themeIcon.textContent = '🌙';
+      themeText.textContent = 'Dark Mode';
+      themeToggleBtn.classList.remove('btn-outline-dark');
+      themeToggleBtn.classList.add('btn-outline-light');
+    }
+  }
   
   // Handle apply form submission
   applyForm.addEventListener('submit', function(e) {

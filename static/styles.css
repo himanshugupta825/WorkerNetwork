@@ -1,18 +1,42 @@
 :root {
+  /* Shared colors */
   --primary-color: #4361ee;
   --secondary-color: #7209b7;
   --accent-color: #f72585;
+  --success-color: #4cc9f0;
+}
+
+/* Dark theme (default) */
+[data-bs-theme="dark"] {
+  --light-color: #212529;
+  --dark-color: #f8f9fa;
+  --bg-color: #212529;
+  --text-color: #f8f9fa;
+  --card-bg: #343a40;
+  --card-border: #495057;
+  --header-gradient-start: #3a0ca3;
+  --header-gradient-end: #4361ee;
+}
+
+/* Light theme */
+[data-bs-theme="light"] {
   --light-color: #f8f9fa;
   --dark-color: #212529;
-  --success-color: #4cc9f0;
+  --bg-color: #ffffff;
+  --text-color: #212529;
+  --card-bg: #ffffff;
+  --card-border: #dee2e6;
+  --header-gradient-start: #4cc9f0;
+  --header-gradient-end: #4361ee;
 }
 
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: var(--light-color);
-  color: var(--dark-color);
+  background-color: var(--bg-color);
+  color: var(--text-color);
   min-height: 100vh;
   padding-bottom: 2rem;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .navbar-brand {
@@ -21,11 +45,12 @@ body {
 }
 
 .site-header {
-  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  background: linear-gradient(135deg, var(--header-gradient-start), var(--header-gradient-end));
   color: white;
   padding: 2rem 0;
   margin-bottom: 2rem;
   text-align: center;
+  transition: background 0.3s ease;
 }
 
 .site-header h1 {
@@ -86,7 +111,9 @@ body {
   padding: 2rem;
   border-radius: 10px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  background-color: white;
+  background-color: var(--card-bg);
+  border: 1px solid var(--card-border);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .form-container h2 {
@@ -193,7 +220,9 @@ body {
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s, background-color 0.3s ease, border-color 0.3s ease;
+  background-color: var(--card-bg);
+  border: 1px solid var(--card-border);
 }
 
 .card:hover {
