@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GigWorker Match</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css" rel="stylesheet">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand" href="/">GigWorker Match</a>
+    </div>
+  </nav>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="container">
+      <h1>GigWorker Match</h1>
+      <p>Connect workers with local jobs - simple, fast, and reliable!</p>
+    </div>
+  </header>
+
+  <!-- Main page with two buttons -->
+  <div class="container" id="main-page">
+    <div class="main-buttons">
+      <button id="apply-button" class="btn btn-primary btn-lg btn-main btn-apply">
+        <span class="me-2">✓</span> Apply for a Job
+      </button>
+      <button id="post-button" class="btn btn-primary btn-lg btn-main btn-post">
+        <span class="me-2">+</span> Post a Job
+      </button>
+    </div>
+  </div>
+
+  <!-- Apply form page (hidden by default) -->
+  <div class="container d-none" id="apply-page">
+    <button class="btn btn-outline-secondary btn-back">
+      <span class="me-2">←</span> Back to Main
+    </button>
+    
+    <div class="form-container">
+      <h2>Apply for a Job</h2>
+      <form id="apply-form">
+        <div class="form-floating mb-3">
+          <input type="text" class="form-control" id="apply-name" placeholder="Your Name" required>
+          <label for="apply-name">Your Name</label>
+        </div>
+        
+        <div class="form-floating mb-3">
+          <input type="tel" class="form-control" id="apply-phone" placeholder="Phone Number" required>
+          <label for="apply-phone">Phone Number</label>
+        </div>
+        
+        <div class="form-floating mb-3">
+          <input type="text" class="form-control" id="apply-skill" placeholder="Your Primary Skill" required>
+          <label for="apply-skill">Your Primary Skill</label>
+        </div>
+        
+        <div class="form-floating mb-3">
+          <input type="text" class="form-control" id="apply-location" placeholder="Your Location" required>
+          <label for="apply-location">Your Location</label>
+        </div>
+        
+        <div class="form-floating mb-3">
+          <input type="text" class="form-control" id="apply-experience" placeholder="Years of Experience">
+          <label for="apply-experience">Years of Experience (Optional)</label>
+        </div>
+        
+        <div class="form-floating mb-3">
+          <input type="text" class="form-control" id="apply-education" placeholder="Education">
+          <label for="apply-education">Education (Optional)</label>
+        </div>
+        
+        <button type="submit" class="btn btn-primary btn-submit">Submit Application</button>
+      </form>
+      
+      <div class="success-message" id="apply-success">
+        <h3>Application Submitted Successfully!</h3>
+        <p>We've received your application. Employers will contact you if there's a match.</p>
+      </div>
+      
+      <div class="error-message" id="apply-error">
+        Error message will appear here
+      </div>
+    </div>
+  </div>
+
+  <!-- Post job form page (hidden by default) -->
+  <div class="container d-none" id="post-job-page">
+    <button class="btn btn-outline-secondary btn-back">
+      <span class="me-2">←</span> Back to Main
+    </button>
+    
+    <div class="form-container">
+      <h2>Post a Job</h2>
+      <form id="post-job-form">
+        <div class="form-floating mb-3">
+          <input type="text" class="form-control" id="post-business" placeholder="Business Name" required>
+          <label for="post-business">Business Name</label>
+        </div>
+        
+        <div class="form-floating mb-3">
+          <input type="text" class="form-control" id="post-role" placeholder="Job Role" required>
+          <label for="post-role">Job Role</label>
+        </div>
+        
+        <div class="form-floating mb-3">
+          <input type="text" class="form-control" id="post-payment" placeholder="Payment/Salary" required>
+          <label for="post-payment">Payment/Salary</label>
+        </div>
+        
+        <div class="form-floating mb-3">
+          <input type="tel" class="form-control" id="post-contact" placeholder="Contact Number" required>
+          <label for="post-contact">Contact Number</label>
+        </div>
+        
+        <div class="form-floating mb-3">
+          <input type="text" class="form-control" id="post-location" placeholder="Job Location">
+          <label for="post-location">Job Location (Optional)</label>
+        </div>
+        
+        <div class="form-floating mb-3">
+          <textarea class="form-control" id="post-description" placeholder="Job Description" style="height: 100px"></textarea>
+          <label for="post-description">Job Description (Optional)</label>
+        </div>
+        
+        <button type="submit" class="btn btn-primary btn-submit">Post Job</button>
+      </form>
+      
+      <div class="success-message" id="post-success">
+        <h3>Job Posted Successfully!</h3>
+        <p>Your job has been posted. Qualified workers will be able to see it and contact you.</p>
+      </div>
+      
+      <div class="error-message" id="post-error">
+        Error message will appear here
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap and Custom JavaScript -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

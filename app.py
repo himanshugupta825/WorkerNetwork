@@ -1,6 +1,6 @@
 import os
 import logging
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 import json
 from database import save_worker_data, save_job_data, initialize_database
@@ -19,6 +19,11 @@ CORS(app)
 
 # Initialize database
 initialize_database()
+
+@app.route('/', methods=['GET'])
+def index():
+    """Main route to serve the frontend"""
+    return render_template('index.html')
 
 @app.route('/health', methods=['GET'])
 def health_check():

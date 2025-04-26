@@ -1,0 +1,158 @@
+:root {
+  --primary-color: #4361ee;
+  --secondary-color: #7209b7;
+  --accent-color: #f72585;
+  --light-color: #f8f9fa;
+  --dark-color: #212529;
+  --success-color: #4cc9f0;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--light-color);
+  color: var(--dark-color);
+  min-height: 100vh;
+  padding-bottom: 2rem;
+}
+
+.navbar-brand {
+  font-weight: 700;
+  font-size: 1.5rem;
+}
+
+.site-header {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: white;
+  padding: 2rem 0;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.site-header h1 {
+  font-weight: 700;
+  margin-bottom: 1rem;
+  font-size: 2.5rem;
+}
+
+.site-header p {
+  font-size: 1.2rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.main-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.btn-main {
+  padding: 1.5rem;
+  font-size: 1.25rem;
+  border-radius: 10px;
+  font-weight: 600;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-main:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.btn-apply {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.btn-post {
+  background-color: var(--secondary-color);
+  border-color: var(--secondary-color);
+}
+
+.btn-back {
+  margin-bottom: 1.5rem;
+}
+
+.form-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  background-color: white;
+}
+
+.form-container h2 {
+  margin-bottom: 1.5rem;
+  color: var(--primary-color);
+  font-weight: 700;
+  text-align: center;
+}
+
+.form-floating {
+  margin-bottom: 1rem;
+}
+
+.form-control:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+}
+
+.btn-submit {
+  background-color: var(--accent-color);
+  border-color: var(--accent-color);
+  padding: 0.75rem 2rem;
+  font-weight: 600;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.success-message {
+  text-align: center;
+  padding: 2rem;
+  border-radius: 10px;
+  background-color: var(--success-color);
+  color: white;
+  margin-top: 2rem;
+  display: none;
+}
+
+.error-message {
+  color: var(--accent-color);
+  margin-top: 1rem;
+  text-align: center;
+  display: none;
+}
+
+/* Responsive adjustments */
+@media (min-width: 768px) {
+  .main-buttons {
+    flex-direction: row;
+    max-width: 800px;
+  }
+  
+  .btn-main {
+    flex: 1;
+  }
+  
+  .site-header h1 {
+    font-size: 3rem;
+  }
+}
+
+/* Animation for success message */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out forwards;
+}
