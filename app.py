@@ -2,11 +2,12 @@ import os
 import logging
 import uuid
 from datetime import datetime
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, send_file
 from flask_cors import CORS
 import json
 from validators import validate_worker_data, validate_job_data
 from models import db, Worker, Job
+import voice_search
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
@@ -214,7 +215,8 @@ def visual_guide(page):
                 {'text': 'Click "Apply for a Job" if you want to find work', 'icon': 'search-icon'},
                 {'text': 'Click "Post a Job" if you want to hire someone', 'icon': 'create-icon'},
                 {'text': 'Click "View Workers" to see available workers', 'icon': 'people-icon'},
-                {'text': 'Click "View Jobs" to see available jobs', 'icon': 'work-icon'}
+                {'text': 'Click "View Jobs" to see available jobs', 'icon': 'work-icon'},
+                {'text': 'Try the voice search by clicking the microphone icon', 'icon': 'mic-icon'}
             ]
         },
         'apply': {
@@ -236,6 +238,16 @@ def visual_guide(page):
                 {'text': 'Enter your contact number', 'icon': 'phone-icon'},
                 {'text': 'Click the Post Job button when done', 'icon': 'send-icon'}
             ]
+        },
+        'voice-search': {
+            'title': 'Voice Search Guide',
+            'steps': [
+                {'text': 'Click the microphone button and speak clearly', 'icon': 'mic-icon'},
+                {'text': 'Say what kind of job you are looking for', 'icon': 'work-icon'},
+                {'text': 'You can mention location, type of work, or payment', 'icon': 'location-icon'},
+                {'text': 'Example: "Find construction jobs in downtown"', 'icon': 'search-icon'},
+                {'text': 'Wait for the results to appear', 'icon': 'send-icon'}
+            ]
         }
     }
     
@@ -246,6 +258,79 @@ def visual_guide(page):
     })
     
     return jsonify(guide)
+
+# Voice search route
+@app.route('/voice-search', methods=['POST'])
+def process_voice_search():
+    """Process voice command and return matching jobs"""
+    try:
+        data = request.get_json()
+        
+        if not data or 'voice_command' not in data:
+            return jsonify({"error": "No voice command provided"}), 400
+            
+        voice_command = data['voice_command']
+        logger.info(f"Received voice command: {voice_command}")
+        
+        # Extract search criteria from voice command
+        search_criteria = voice_search.extract_job_search_criteria(voice_command)
+        logger.info(f"Extracted search criteria: {search_criteria}")
+        
+        # Get all jobs from the database
+        jobs = Job.query.filter_by(status='open').all()
+        jobs_list = [job.to_dict() for job in jobs]
+        
+        # Filter jobs based on the search criteria
+        filtered_jobs = voice_search.filter_jobs_by_criteria(jobs_list, search_criteria)
+        
+        # Generate voice response
+        voice_response = voice_search.generate_voice_response(filtered_jobs, search_criteria)
+        
+        return jsonify({
+            "message": "Voice search processed successfully",
+            "voice_response": voice_response,
+            "matched_jobs": filtered_jobs,
+            "total_matches": len(filtered_jobs),
+            "search_criteria": search_criteria
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"Error processing voice search: {str(e)}")
+        return jsonify({"error": "An error occurred while processing your voice search"}), 500
+
+# Voice response audio route
+@app.route('/voice-response', methods=['POST'])
+def generate_voice_response_audio():
+    """Generate audio file from voice response text"""
+    try:
+        import pyttsx3
+        import tempfile
+        
+        data = request.get_json()
+        
+        if not data or 'text' not in data:
+            return jsonify({"error": "No response text provided"}), 400
+            
+        response_text = data['text']
+        
+        # Initialize the text-to-speech engine
+        engine = pyttsx3.init()
+        
+        # Create a temporary file to store the audio
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.mp3') as tmp_file:
+            temp_filename = tmp_file.name
+        
+        # Save the speech as an audio file
+        engine.save_to_file(response_text, temp_filename)
+        engine.runAndWait()
+        
+        # Return the audio file
+        return send_file(temp_filename, mimetype='audio/mpeg', as_attachment=True, 
+                       download_name='voice-response.mp3')
+                       
+    except Exception as e:
+        logger.error(f"Error generating voice response audio: {str(e)}")
+        return jsonify({"error": "An error occurred while generating voice response"}), 500
 
 # Error handlers
 @app.errorhandler(404)
