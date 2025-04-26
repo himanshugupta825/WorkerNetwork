@@ -29,6 +29,16 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 # Initialize the database
 db.init_app(app)
 
+# Initialize Flask-Login
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
+
+# User loader callback for Flask-Login
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(user_id)
+
 # Enable CORS for all routes
 CORS(app)
 
@@ -345,3 +355,136 @@ def method_not_allowed(error):
 @app.errorhandler(500)
 def server_error(error):
     return jsonify({"error": "Internal server error"}), 500
+
+# User registration route
+@app.route('/register', methods=['POST'])
+def register():
+    """Register a new user"""
+    try:
+        data = request.get_json()
+        
+        if not data:
+            return jsonify({"error": "No data provided"}), 400
+        
+        # Validate registration data
+        validation_result = validate_registration_data(data)
+        if validation_result:
+            return jsonify({"error": validation_result}), 400
+        
+        # Check if user already exists
+        existing_user = User.query.filter_by(email=data['email']).first()
+        if existing_user:
+            return jsonify({"error": "A user with this email already exists"}), 400
+        
+        existing_username = User.query.filter_by(username=data['username']).first()
+        if existing_username:
+            return jsonify({"error": "Username already taken"}), 400
+        
+        # Create new user
+        user_id = str(uuid.uuid4())
+        new_user = User(
+            id=user_id,
+            username=data['username'],
+            email=data['email'],
+            created_at=datetime.utcnow()
+        )
+        
+        # Set password
+        new_user.set_password(data['password'])
+        
+        # Set user type
+        user_type = data.get('user_type', 'both')
+        if user_type == 'worker':
+            new_user.is_worker = True
+        elif user_type == 'employer':
+            new_user.is_employer = True
+        elif user_type == 'both':
+            new_user.is_worker = True
+            new_user.is_employer = True
+        
+        # Save to database
+        db.session.add(new_user)
+        db.session.commit()
+        
+        # Log in the user
+        login_user(new_user)
+        
+        logger.info(f"User registered with ID: {user_id}")
+        
+        return jsonify({
+            "message": "User registered successfully",
+            "user_id": user_id,
+            "username": new_user.username
+        }), 201
+        
+    except Exception as e:
+        logger.error(f"Error registering user: {str(e)}")
+        db.session.rollback()
+        return jsonify({"error": "An error occurred while registering"}), 500
+
+# User login route
+@app.route('/login', methods=['POST'])
+def login():
+    """Log in a user"""
+    try:
+        data = request.get_json()
+        
+        if not data:
+            return jsonify({"error": "No data provided"}), 400
+        
+        # Validate login data
+        validation_result = validate_login_data(data)
+        if validation_result:
+            return jsonify({"error": validation_result}), 400
+        
+        # Find user by email
+        user = User.query.filter_by(email=data['email']).first()
+        
+        # Check if user exists and password is correct
+        if not user or not user.check_password(data['password']):
+            return jsonify({"error": "Invalid email or password"}), 401
+        
+        # Log in the user
+        login_user(user)
+        
+        logger.info(f"User logged in: {user.username}")
+        
+        return jsonify({
+            "message": "Login successful",
+            "user_id": user.id,
+            "username": user.username,
+            "is_worker": user.is_worker,
+            "is_employer": user.is_employer
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"Error logging in user: {str(e)}")
+        return jsonify({"error": "An error occurred while logging in"}), 500
+
+# User logout route
+@app.route('/logout', methods=['POST'])
+@login_required
+def logout():
+    """Log out a user"""
+    try:
+        username = current_user.username
+        logout_user()
+        logger.info(f"User logged out: {username}")
+        return jsonify({"message": "Logout successful"}), 200
+    except Exception as e:
+        logger.error(f"Error logging out user: {str(e)}")
+        return jsonify({"error": "An error occurred while logging out"}), 500
+
+# Get current user info
+@app.route('/user', methods=['GET'])
+@login_required
+def get_current_user():
+    """Get current logged-in user info"""
+    try:
+        return jsonify({
+            "message": "User info retrieved successfully",
+            "user": current_user.to_dict()
+        }), 200
+    except Exception as e:
+        logger.error(f"Error retrieving user info: {str(e)}")
+        return jsonify({"error": "An error occurred while retrieving user info"}), 500

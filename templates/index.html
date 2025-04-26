@@ -15,6 +15,31 @@
     <div class="container">
       <a class="navbar-brand" href="/">GigWorker Match</a>
       <div class="ms-auto d-flex gap-2">
+        <!-- Auth buttons (shown when logged out) -->
+        <div id="auth-buttons" class="d-flex gap-2">
+          <button id="login-btn" class="btn btn-outline-info btn-sm" data-bs-toggle="modal" data-bs-target="#loginModal">
+            Login
+          </button>
+          <button id="register-btn" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#registerModal">
+            Sign Up
+          </button>
+        </div>
+        
+        <!-- User info (shown when logged in) -->
+        <div id="user-info" class="d-none d-flex gap-2 align-items-center">
+          <span id="username-display" class="text-light me-2"></span>
+          <div class="dropdown">
+            <button class="btn btn-outline-light btn-sm dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+              <span id="user-icon">👤</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+              <li><a class="dropdown-item" id="profile-link" href="#">My Profile</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" id="logout-link" href="#">Logout</a></li>
+            </ul>
+          </div>
+        </div>
+        
         <button id="voice-guide-btn" class="accessibility-btn" aria-label="Voice guidance">
           <span id="speaker-icon"></span> Voice Guide
         </button>
@@ -280,6 +305,119 @@
       
       <div id="jobs-error" class="alert alert-danger d-none">
         Error loading jobs
+      </div>
+    </div>
+  </div>
+
+  <!-- Login Modal -->
+  <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="loginModalLabel">Login</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="login-form">
+            <div class="form-floating mb-3">
+              <input type="email" class="form-control" id="login-email" placeholder="name@example.com" required>
+              <label for="login-email">Email address</label>
+            </div>
+            <div class="form-floating mb-3">
+              <input type="password" class="form-control" id="login-password" placeholder="Password" required>
+              <label for="login-password">Password</label>
+            </div>
+            <div class="alert alert-danger d-none" id="login-error"></div>
+            <button type="submit" class="btn btn-primary w-100">Login</button>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <p class="w-100 text-center mb-0">
+            Don't have an account? 
+            <a href="#" data-bs-toggle="modal" data-bs-target="#registerModal" data-bs-dismiss="modal">Sign up</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Register Modal -->
+  <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="registerModalLabel">Create Account</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="register-form">
+            <div class="form-floating mb-3">
+              <input type="text" class="form-control" id="register-username" placeholder="Username" required>
+              <label for="register-username">Username</label>
+            </div>
+            <div class="form-floating mb-3">
+              <input type="email" class="form-control" id="register-email" placeholder="name@example.com" required>
+              <label for="register-email">Email address</label>
+            </div>
+            <div class="form-floating mb-3">
+              <input type="password" class="form-control" id="register-password" placeholder="Password" required>
+              <label for="register-password">Password</label>
+            </div>
+            <div class="form-floating mb-3">
+              <input type="password" class="form-control" id="register-confirm-password" placeholder="Confirm Password" required>
+              <label for="register-confirm-password">Confirm Password</label>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">I want to:</label>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="user-type" id="register-type-worker" value="worker">
+                <label class="form-check-label" for="register-type-worker">
+                  Apply for jobs (Worker)
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="user-type" id="register-type-employer" value="employer">
+                <label class="form-check-label" for="register-type-employer">
+                  Post jobs (Employer)
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="user-type" id="register-type-both" value="both" checked>
+                <label class="form-check-label" for="register-type-both">
+                  Both apply for and post jobs
+                </label>
+              </div>
+            </div>
+            <div class="alert alert-danger d-none" id="register-error"></div>
+            <button type="submit" class="btn btn-primary w-100">Create Account</button>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <p class="w-100 text-center mb-0">
+            Already have an account? 
+            <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal" data-bs-dismiss="modal">Login</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- User Profile Modal -->
+  <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="profileModalLabel">My Profile</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div id="profile-details">
+            <p><strong>Username:</strong> <span id="profile-username"></span></p>
+            <p><strong>Email:</strong> <span id="profile-email"></span></p>
+            <p><strong>Account Type:</strong> <span id="profile-type"></span></p>
+            <p><strong>Member Since:</strong> <span id="profile-created"></span></p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
