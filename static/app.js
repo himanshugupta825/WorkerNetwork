@@ -769,8 +769,17 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Function to update profile modal with user data
   function updateProfileModal(user) {
+    // Update profile details
     profileUsername.textContent = user.username;
     profileEmail.textContent = user.email;
+    
+    // Update header elements
+    const profileUsernameHeader = document.getElementById('profile-username-header');
+    const profileTypeHeader = document.getElementById('profile-type-header');
+    
+    if (profileUsernameHeader) {
+      profileUsernameHeader.textContent = user.username;
+    }
     
     // Determine account type
     let accountType = '';
@@ -785,6 +794,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     profileType.textContent = accountType;
+    
+    if (profileTypeHeader) {
+      profileTypeHeader.textContent = accountType;
+    }
     
     // Format the created_at date
     if (user.created_at) {
@@ -927,6 +940,38 @@ document.addEventListener('DOMContentLoaded', function() {
       .then(data => {
         // Show login/register buttons
         showAuthButtons();
+        
+        // Close the profile modal if it's open
+        const profileModal = bootstrap.Modal.getInstance(document.getElementById('profileModal'));
+        if (profileModal) {
+          profileModal.hide();
+        }
+      })
+      .catch(error => {
+        console.error('Logout error:', error);
+      });
+    });
+  }
+  
+  // Additional logout button in profile modal
+  const logoutBtn = document.getElementById('logout-btn');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      
+      fetch('/logout', {
+        method: 'POST'
+      })
+      .then(response => response.json())
+      .then(data => {
+        // Show login/register buttons
+        showAuthButtons();
+        
+        // Close the profile modal
+        const profileModal = bootstrap.Modal.getInstance(document.getElementById('profileModal'));
+        if (profileModal) {
+          profileModal.hide();
+        }
       })
       .catch(error => {
         console.error('Logout error:', error);

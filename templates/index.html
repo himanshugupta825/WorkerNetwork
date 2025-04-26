@@ -6,6 +6,8 @@
   <title>GigWorker Match</title>
   <!-- Bootstrap CSS with theme support -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
   <!-- Custom CSS -->
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
@@ -17,20 +19,20 @@
       <div class="ms-auto d-flex gap-2">
         <!-- Auth buttons (shown when logged out) -->
         <div id="auth-buttons" class="d-flex gap-2">
-          <button id="login-btn" class="btn btn-outline-info btn-sm" data-bs-toggle="modal" data-bs-target="#loginModal">
-            Login
-          </button>
-          <button id="register-btn" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#registerModal">
-            Sign Up
-          </button>
+          <a id="login-btn" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#loginModal">
+            <i class="bi bi-box-arrow-in-right"></i> Login
+          </a>
+          <a id="register-btn" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#registerModal">
+            <i class="bi bi-person-plus"></i> Sign Up
+          </a>
         </div>
         
         <!-- User info (shown when logged in) -->
         <div id="user-info" class="d-none d-flex gap-2 align-items-center">
-          <span id="username-display" class="text-light me-2"></span>
+          <span id="username-display" class="text-light me-2 fw-bold"></span>
           <div class="dropdown">
-            <button class="btn btn-outline-light btn-sm dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-              <span id="user-icon">👤</span>
+            <button class="btn btn-light dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="bi bi-person-circle"></i>
             </button>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
               <li><a class="dropdown-item" id="profile-link" href="#">My Profile</a></li>
@@ -313,28 +315,40 @@
   <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="loginModalLabel">Login</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title" id="loginModalLabel"><i class="bi bi-box-arrow-in-right"></i> Login to Your Account</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
+          <div class="text-center mb-4">
+            <i class="bi bi-person-circle" style="font-size: 3rem;"></i>
+            <p class="mt-2">Sign in to access all features</p>
+          </div>
           <form id="login-form">
-            <div class="form-floating mb-3">
-              <input type="email" class="form-control" id="login-email" placeholder="name@example.com" required>
-              <label for="login-email">Email address</label>
+            <div class="input-group mb-3">
+              <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+              <div class="form-floating">
+                <input type="email" class="form-control" id="login-email" placeholder="name@example.com" required>
+                <label for="login-email">Email address</label>
+              </div>
             </div>
-            <div class="form-floating mb-3">
-              <input type="password" class="form-control" id="login-password" placeholder="Password" required>
-              <label for="login-password">Password</label>
+            <div class="input-group mb-3">
+              <span class="input-group-text"><i class="bi bi-key"></i></span>
+              <div class="form-floating">
+                <input type="password" class="form-control" id="login-password" placeholder="Password" required>
+                <label for="login-password">Password</label>
+              </div>
             </div>
             <div class="alert alert-danger d-none" id="login-error"></div>
-            <button type="submit" class="btn btn-primary w-100">Login</button>
+            <button type="submit" class="btn btn-primary w-100 py-2">
+              <i class="bi bi-box-arrow-in-right me-2"></i> Login
+            </button>
           </form>
         </div>
-        <div class="modal-footer">
+        <div class="modal-footer bg-light">
           <p class="w-100 text-center mb-0">
             Don't have an account? 
-            <a href="#" data-bs-toggle="modal" data-bs-target="#registerModal" data-bs-dismiss="modal">Sign up</a>
+            <a href="#" data-bs-toggle="modal" data-bs-target="#registerModal" data-bs-dismiss="modal" class="fw-bold">Sign up now</a>
           </p>
         </div>
       </div>
@@ -345,57 +359,79 @@
   <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="registerModalLabel">Create Account</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-header bg-success text-white">
+          <h5 class="modal-title" id="registerModalLabel"><i class="bi bi-person-plus"></i> Create New Account</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
+          <div class="text-center mb-4">
+            <i class="bi bi-person-plus-fill" style="font-size: 3rem;"></i>
+            <p class="mt-2">Join GigWorker Match today</p>
+          </div>
           <form id="register-form">
-            <div class="form-floating mb-3">
-              <input type="text" class="form-control" id="register-username" placeholder="Username" required>
-              <label for="register-username">Username</label>
-            </div>
-            <div class="form-floating mb-3">
-              <input type="email" class="form-control" id="register-email" placeholder="name@example.com" required>
-              <label for="register-email">Email address</label>
-            </div>
-            <div class="form-floating mb-3">
-              <input type="password" class="form-control" id="register-password" placeholder="Password" required>
-              <label for="register-password">Password</label>
-            </div>
-            <div class="form-floating mb-3">
-              <input type="password" class="form-control" id="register-confirm-password" placeholder="Confirm Password" required>
-              <label for="register-confirm-password">Confirm Password</label>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">I want to:</label>
-              <div class="form-check">
-                <input class="form-check-input" type="radio" name="user-type" id="register-type-worker" value="worker">
-                <label class="form-check-label" for="register-type-worker">
-                  Apply for jobs (Worker)
-                </label>
+            <div class="input-group mb-3">
+              <span class="input-group-text"><i class="bi bi-person"></i></span>
+              <div class="form-floating">
+                <input type="text" class="form-control" id="register-username" placeholder="Username" required>
+                <label for="register-username">Username</label>
               </div>
-              <div class="form-check">
-                <input class="form-check-input" type="radio" name="user-type" id="register-type-employer" value="employer">
-                <label class="form-check-label" for="register-type-employer">
-                  Post jobs (Employer)
-                </label>
+            </div>
+            <div class="input-group mb-3">
+              <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+              <div class="form-floating">
+                <input type="email" class="form-control" id="register-email" placeholder="name@example.com" required>
+                <label for="register-email">Email address</label>
               </div>
-              <div class="form-check">
-                <input class="form-check-input" type="radio" name="user-type" id="register-type-both" value="both" checked>
-                <label class="form-check-label" for="register-type-both">
-                  Both apply for and post jobs
-                </label>
+            </div>
+            <div class="input-group mb-3">
+              <span class="input-group-text"><i class="bi bi-lock"></i></span>
+              <div class="form-floating">
+                <input type="password" class="form-control" id="register-password" placeholder="Password" required>
+                <label for="register-password">Password</label>
+              </div>
+            </div>
+            <div class="input-group mb-3">
+              <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+              <div class="form-floating">
+                <input type="password" class="form-control" id="register-confirm-password" placeholder="Confirm Password" required>
+                <label for="register-confirm-password">Confirm Password</label>
+              </div>
+            </div>
+            <div class="card mb-3">
+              <div class="card-header bg-primary bg-opacity-25">
+                <i class="bi bi-person-badge me-2"></i> Account Type
+              </div>
+              <div class="card-body">
+                <div class="form-check mb-2">
+                  <input class="form-check-input" type="radio" name="user-type" id="register-type-worker" value="worker">
+                  <label class="form-check-label" for="register-type-worker">
+                    <i class="bi bi-person-badge me-1"></i> Worker - Apply for jobs
+                  </label>
+                </div>
+                <div class="form-check mb-2">
+                  <input class="form-check-input" type="radio" name="user-type" id="register-type-employer" value="employer">
+                  <label class="form-check-label" for="register-type-employer">
+                    <i class="bi bi-building me-1"></i> Employer - Post jobs
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="user-type" id="register-type-both" value="both" checked>
+                  <label class="form-check-label" for="register-type-both">
+                    <i class="bi bi-people me-1"></i> Both - Post and apply for jobs
+                  </label>
+                </div>
               </div>
             </div>
             <div class="alert alert-danger d-none" id="register-error"></div>
-            <button type="submit" class="btn btn-primary w-100">Create Account</button>
+            <button type="submit" class="btn btn-success w-100 py-2">
+              <i class="bi bi-person-plus me-2"></i> Create Account
+            </button>
           </form>
         </div>
-        <div class="modal-footer">
+        <div class="modal-footer bg-light">
           <p class="w-100 text-center mb-0">
             Already have an account? 
-            <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal" data-bs-dismiss="modal">Login</a>
+            <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal" data-bs-dismiss="modal" class="fw-bold">Login here</a>
           </p>
         </div>
       </div>
@@ -406,17 +442,64 @@
   <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="profileModalLabel">My Profile</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-header bg-info text-white">
+          <h5 class="modal-title" id="profileModalLabel"><i class="bi bi-person-circle"></i> My Profile</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <div id="profile-details">
-            <p><strong>Username:</strong> <span id="profile-username"></span></p>
-            <p><strong>Email:</strong> <span id="profile-email"></span></p>
-            <p><strong>Account Type:</strong> <span id="profile-type"></span></p>
-            <p><strong>Member Since:</strong> <span id="profile-created"></span></p>
+          <div class="text-center mb-4">
+            <div class="profile-avatar">
+              <i class="bi bi-person-circle" style="font-size: 5rem;"></i>
+            </div>
+            <h4 class="mt-2 mb-0" id="profile-username-header"></h4>
+            <p class="text-muted" id="profile-type-header"></p>
           </div>
+          <div class="card" id="profile-details">
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item">
+                <div class="d-flex justify-content-between">
+                  <div>
+                    <i class="bi bi-person me-2 text-primary"></i>
+                    <strong>Username</strong>
+                  </div>
+                  <span id="profile-username"></span>
+                </div>
+              </li>
+              <li class="list-group-item">
+                <div class="d-flex justify-content-between">
+                  <div>
+                    <i class="bi bi-envelope me-2 text-primary"></i>
+                    <strong>Email</strong>
+                  </div>
+                  <span id="profile-email"></span>
+                </div>
+              </li>
+              <li class="list-group-item">
+                <div class="d-flex justify-content-between">
+                  <div>
+                    <i class="bi bi-person-badge me-2 text-primary"></i>
+                    <strong>Account Type</strong>
+                  </div>
+                  <span id="profile-type"></span>
+                </div>
+              </li>
+              <li class="list-group-item">
+                <div class="d-flex justify-content-between">
+                  <div>
+                    <i class="bi bi-calendar-date me-2 text-primary"></i>
+                    <strong>Member Since</strong>
+                  </div>
+                  <span id="profile-created"></span>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-danger" id="logout-btn">
+            <i class="bi bi-box-arrow-right me-2"></i> Logout
+          </button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         </div>
       </div>
     </div>
