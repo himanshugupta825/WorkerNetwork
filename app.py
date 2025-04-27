@@ -169,7 +169,27 @@ def get_workers():
 def get_jobs():
     """Get all job listings"""
     try:
-        jobs = Job.query.order_by(Job.created_at.desc()).all()
+        # Check if there's a search query parameter
+        search_query = request.args.get('query', '')
+        
+        if search_query:
+            # Perform a search based on the query
+            # This is a simple implementation that searches in job role, business name, and location
+            search_term = f"%{search_query}%"
+            jobs = Job.query.filter(
+                db.or_(
+                    Job.job_role.ilike(search_term),
+                    Job.business_name.ilike(search_term),
+                    Job.location.ilike(search_term),
+                    Job.job_description.ilike(search_term)
+                )
+            ).order_by(Job.created_at.desc()).all()
+            
+            logger.info(f"Search query: {search_query}, found {len(jobs)} matching jobs")
+        else:
+            # Get all jobs from the database
+            jobs = Job.query.order_by(Job.created_at.desc()).all()
+            
         return jsonify({
             "message": "Jobs retrieved successfully",
             "count": len(jobs),
