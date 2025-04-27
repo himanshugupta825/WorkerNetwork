@@ -328,52 +328,63 @@ document.addEventListener('DOMContentLoaded', function() {
   updateDateTime();
   setInterval(updateDateTime, 60000); // Update every minute
   
-  // Function to get user's location
-  function getUserLocation() {
-    if (navigator.geolocation && currentLocationElement) {
-      currentLocationElement.textContent = "Detecting...";
-      
-      navigator.geolocation.getCurrentPosition(
-        function(position) {
-          // Use reverse geocoding to get location name
-          const latitude = position.coords.latitude;
-          const longitude = position.coords.longitude;
-          
-          // For demo purposes, just show coordinates and then fetch city name
-          fetchLocationName(latitude, longitude);
-        },
-        function(error) {
-          console.error("Error getting location:", error);
-          currentLocationElement.textContent = "Unknown";
-        }
-      );
-    } else if (currentLocationElement) {
-      currentLocationElement.textContent = "Not supported";
-    }
-  }
-  
-  // Function to fetch location name from coordinates
-  function fetchLocationName(latitude, longitude) {
-    // In a real app, you would use a geocoding API like Google Maps or OpenStreetMap
-    // For this demo, we'll just use a simple location
-    setTimeout(() => {
-      if (currentLocationElement) {
-        currentLocationElement.textContent = "New York";
-      }
-    }, 1000);
-  }
-  
-  // Initialize location if the element exists
-  if (currentLocationElement) {
-    getUserLocation();
+  // Set up location dropdown functionality
+  function setupLocationDropdown() {
+    // Get all location options
+    const locationOptions = document.querySelectorAll('.location-option');
     
-    // Allow user to refresh location by clicking on the location display
-    if (locationDisplay) {
-      locationDisplay.addEventListener('click', function() {
-        getUserLocation();
-      });
+    // Set initial location
+    if (currentLocationElement) {
+      const savedLocation = localStorage.getItem('selectedLocation') || 'All Locations';
+      currentLocationElement.textContent = savedLocation;
     }
+    
+    // Add click event listeners to each location option
+    locationOptions.forEach(option => {
+      option.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        // Get the selected location
+        const selectedLocation = this.getAttribute('data-location');
+        
+        // Update the current location display
+        if (currentLocationElement) {
+          currentLocationElement.textContent = selectedLocation;
+          
+          // Save to localStorage
+          localStorage.setItem('selectedLocation', selectedLocation);
+          
+          // If a location is selected and search form exists, update search
+          if (navbarSearchForm && selectedLocation !== 'All Locations') {
+            // If the search input has text, automatically trigger search with location
+            const searchQuery = navbarSearchInput.value.trim();
+            if (searchQuery) {
+              // We could automatically trigger the search, but for now we'll just let
+              // the user click the search button when ready
+              console.log(`Location updated to: ${selectedLocation}`);
+            }
+          }
+        }
+        
+        // Add active class to selected item and remove from others
+        locationOptions.forEach(opt => {
+          if (opt.getAttribute('data-location') === selectedLocation) {
+            opt.classList.add('active');
+          } else {
+            opt.classList.remove('active');
+          }
+        });
+      });
+      
+      // Set initial active state
+      if (localStorage.getItem('selectedLocation') === option.getAttribute('data-location')) {
+        option.classList.add('active');
+      }
+    });
   }
+  
+  // Initialize location dropdown
+  setupLocationDropdown();
   
   // Handle search form submission
   if (navbarSearchForm) {
@@ -381,9 +392,10 @@ document.addEventListener('DOMContentLoaded', function() {
       e.preventDefault();
       
       const searchQuery = navbarSearchInput.value.trim();
+      const selectedLocation = currentLocationElement ? currentLocationElement.textContent : 'All Locations';
       
       if (searchQuery) {
-        console.log('Searching for:', searchQuery);
+        console.log('Searching for:', searchQuery, 'in location:', selectedLocation);
         
         // Navigate to jobs page and show loading indicator
         document.getElementById('main-page').classList.add('d-none');
@@ -395,8 +407,14 @@ document.addEventListener('DOMContentLoaded', function() {
         jobsError.classList.add('d-none');
         noJobsMessage.classList.add('d-none');
         
-        // Fetch jobs with the search query
-        fetch(`/jobs?query=${encodeURIComponent(searchQuery)}`)
+        // Build the query URL with search query and location (if not "All Locations")
+        let queryUrl = `/jobs?query=${encodeURIComponent(searchQuery)}`;
+        if (selectedLocation && selectedLocation !== 'All Locations') {
+          queryUrl += `&location=${encodeURIComponent(selectedLocation)}`;
+        }
+        
+        // Fetch jobs with the search query and location
+        fetch(queryUrl)
           .then(response => response.json())
           .then(data => {
             jobsLoading.classList.add('d-none');
@@ -410,9 +428,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 const jobCard = createJobCard(job);
                 jobsContainer.appendChild(jobCard);
               });
+              
+              // Display search summary
+              const locationText = selectedLocation !== 'All Locations' ? ` in ${selectedLocation}` : '';
+              document.getElementById('jobs-heading').textContent = `Jobs matching "${searchQuery}"${locationText}`;
             } else {
               // Show no jobs message
               noJobsMessage.classList.remove('d-none');
+              noJobsMessage.textContent = `No jobs found matching "${searchQuery}"${selectedLocation !== 'All Locations' ? ` in ${selectedLocation}` : ''}`;
             }
           })
           .catch(error => {

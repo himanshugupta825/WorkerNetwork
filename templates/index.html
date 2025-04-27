@@ -33,10 +33,26 @@
       <form class="d-none d-md-flex mx-3 flex-grow-1" id="navbar-search-form">
         <div class="input-group">
           <input type="text" class="form-control" placeholder="Search jobs or skills..." id="navbar-search-input">
-          <span class="input-group-text location-indicator" id="location-display" title="Current location">
-            <i class="bi bi-geo-alt-fill"></i>
-            <span id="current-location">Loading...</span>
-          </span>
+          <div class="dropdown location-dropdown">
+            <button class="btn btn-outline-secondary location-indicator dropdown-toggle" type="button" id="location-dropdown-btn" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="bi bi-geo-alt-fill"></i>
+              <span id="current-location">Select Location</span>
+            </button>
+            <ul class="dropdown-menu location-menu" aria-labelledby="location-dropdown-btn">
+              <li><a class="dropdown-item location-option" href="#" data-location="All Locations">All Locations</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item location-option" href="#" data-location="New York">New York</a></li>
+              <li><a class="dropdown-item location-option" href="#" data-location="Los Angeles">Los Angeles</a></li>
+              <li><a class="dropdown-item location-option" href="#" data-location="Chicago">Chicago</a></li>
+              <li><a class="dropdown-item location-option" href="#" data-location="Houston">Houston</a></li>
+              <li><a class="dropdown-item location-option" href="#" data-location="Phoenix">Phoenix</a></li>
+              <li><a class="dropdown-item location-option" href="#" data-location="Philadelphia">Philadelphia</a></li>
+              <li><a class="dropdown-item location-option" href="#" data-location="San Antonio">San Antonio</a></li>
+              <li><a class="dropdown-item location-option" href="#" data-location="San Diego">San Diego</a></li>
+              <li><a class="dropdown-item location-option" href="#" data-location="Dallas">Dallas</a></li>
+              <li><a class="dropdown-item location-option" href="#" data-location="San Jose">San Jose</a></li>
+            </ul>
+          </div>
           <button class="btn btn-primary" type="submit">
             <i class="bi bi-search"></i>
           </button>
@@ -399,7 +415,7 @@
     </button>
     
     <div class="content-container">
-      <h2>Job Listings</h2>
+      <h2 id="jobs-heading">Job Listings</h2>
       <div class="spinner-border text-primary" role="status" id="jobs-loading">
         <span class="visually-hidden">Loading...</span>
       </div>

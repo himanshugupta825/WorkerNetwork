@@ -169,25 +169,41 @@ def get_workers():
 def get_jobs():
     """Get all job listings"""
     try:
-        # Check if there's a search query parameter
+        # Check if there are search query or location parameters
         search_query = request.args.get('query', '')
+        search_location = request.args.get('location', '')
         
+        # Build the query based on the parameters
+        query = Job.query
+        
+        # Add search term filter if provided
         if search_query:
-            # Perform a search based on the query
-            # This is a simple implementation that searches in job role, business name, and location
             search_term = f"%{search_query}%"
-            jobs = Job.query.filter(
+            query = query.filter(
                 db.or_(
                     Job.job_role.ilike(search_term),
                     Job.business_name.ilike(search_term),
-                    Job.location.ilike(search_term),
                     Job.job_description.ilike(search_term)
                 )
-            ).order_by(Job.created_at.desc()).all()
-            
-            logger.info(f"Search query: {search_query}, found {len(jobs)} matching jobs")
+            )
+        
+        # Add location filter if provided and not 'All Locations'
+        if search_location and search_location != 'All Locations':
+            location_term = f"%{search_location}%"
+            query = query.filter(Job.location.ilike(location_term))
+        
+        # Execute the query with ordering
+        jobs = query.order_by(Job.created_at.desc()).all()
+        
+        # Log the search
+        if search_query or search_location:
+            log_message = f"Search - Query: '{search_query}'"
+            if search_location:
+                log_message += f", Location: '{search_location}'"
+            log_message += f" - Found {len(jobs)} matching jobs"
+            logger.info(log_message)
         else:
-            # Get all jobs from the database
+            # Get all jobs from the database if no search params
             jobs = Job.query.order_by(Job.created_at.desc()).all()
             
         return jsonify({

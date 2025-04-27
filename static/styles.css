@@ -559,6 +559,30 @@ body {
   margin-right: 4px;
 }
 
+/* Location dropdown styling */
+.location-dropdown .dropdown-menu {
+  max-height: 300px;
+  overflow-y: auto;
+  min-width: 200px;
+}
+
+.location-dropdown .dropdown-item {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.location-dropdown .dropdown-item:hover {
+  background-color: rgba(var(--bs-info-rgb), 0.1);
+}
+
+.location-dropdown .dropdown-item.active {
+  background-color: rgba(var(--bs-info-rgb), 0.2);
+  color: var(--bs-info);
+  font-weight: 500;
+}
+
 /* Navbar search form */
 #navbar-search-form {
   transition: all 0.3s ease;
