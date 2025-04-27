@@ -190,7 +190,7 @@ def voice_guide(page):
     
     # Define voice instructions for each page
     instructions = {
-        'main': "Welcome to GigWorker Match. This page has four big buttons. The blue button on top is for applying to a job. The purple button below it is for posting a job. The light blue buttons are for viewing workers and job listings.",
+        'main': "Welcome to GigWorkers. This page has four big buttons. The blue button on top is for applying to a job. The purple button below it is for posting a job. The light blue buttons are for viewing workers and job listings.",
         'apply': "This is the job application form. Fill in your name, phone number, skill, and location. You can also add your experience and education if you want. Then press the red Submit button at the bottom.",
         'post-job': "This is the job posting form. Fill in your business name, the job you're offering, payment details, and your contact number. You can also add job location and description if you want. Then press the red Post Job button at the bottom.",
         'workers': "This page shows all available workers. Each box contains a worker's details including their name, skills, location, experience, education, and contact information.",
