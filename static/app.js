@@ -330,16 +330,60 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Set up location dropdown functionality
   function setupLocationDropdown() {
-    // Get all location options
+    // Define a list of available locations
+    const locations = [
+      'All Locations',
+      'New York, NY',
+      'Los Angeles, CA',
+      'Chicago, IL',
+      'Houston, TX',
+      'Phoenix, AZ',
+      'Philadelphia, PA',
+      'San Antonio, TX',
+      'San Diego, CA',
+      'Dallas, TX',
+      'San Jose, CA'
+    ];
+    
+    // Get all location options in the dropdown menu
     const locationOptions = document.querySelectorAll('.location-option');
     
-    // Set initial location
+    // Populate the nearby location select dropdown
+    const nearbyLocationSelect = document.getElementById('nearby-location-select');
+    if (nearbyLocationSelect) {
+      // Clear existing options
+      nearbyLocationSelect.innerHTML = '';
+      
+      // Add location options (excluding 'All Locations' for nearby jobs)
+      locations.forEach(location => {
+        if (location !== 'All Locations') {
+          const option = document.createElement('option');
+          option.value = location;
+          option.textContent = location;
+          nearbyLocationSelect.appendChild(option);
+        }
+      });
+      
+      // Set default selection based on saved location
+      const savedLocation = localStorage.getItem('selectedLocation');
+      if (savedLocation && savedLocation !== 'All Locations') {
+        // Find and select the matching option
+        for (let i = 0; i < nearbyLocationSelect.options.length; i++) {
+          if (nearbyLocationSelect.options[i].value === savedLocation) {
+            nearbyLocationSelect.options[i].selected = true;
+            break;
+          }
+        }
+      }
+    }
+    
+    // Set initial location in the navbar
     if (currentLocationElement) {
       const savedLocation = localStorage.getItem('selectedLocation') || 'All Locations';
       currentLocationElement.textContent = savedLocation;
     }
     
-    // Add click event listeners to each location option
+    // Add click event listeners to each location option in the dropdown
     locationOptions.forEach(option => {
       option.addEventListener('click', function(e) {
         e.preventDefault();
@@ -353,6 +397,16 @@ document.addEventListener('DOMContentLoaded', function() {
           
           // Save to localStorage
           localStorage.setItem('selectedLocation', selectedLocation);
+          
+          // Update nearby location dropdown to match
+          if (nearbyLocationSelect && selectedLocation !== 'All Locations') {
+            for (let i = 0; i < nearbyLocationSelect.options.length; i++) {
+              if (nearbyLocationSelect.options[i].value === selectedLocation) {
+                nearbyLocationSelect.options[i].selected = true;
+                break;
+              }
+            }
+          }
           
           // If a location is selected and search form exists, update search
           if (navbarSearchForm && selectedLocation !== 'All Locations') {
@@ -376,15 +430,114 @@ document.addEventListener('DOMContentLoaded', function() {
         });
       });
       
-      // Set initial active state
+      // Set initial active state in the dropdown
       if (localStorage.getItem('selectedLocation') === option.getAttribute('data-location')) {
         option.classList.add('active');
       }
     });
+    
+    // Set up nearby jobs functionality
+    setupNearbyJobs();
   }
   
   // Initialize location dropdown
   setupLocationDropdown();
+  
+  // Function to set up nearby jobs functionality
+  function setupNearbyJobs() {
+    const findNearbyJobsBtn = document.getElementById('find-nearby-jobs');
+    if (!findNearbyJobsBtn) return;
+    
+    findNearbyJobsBtn.addEventListener('click', searchNearbyJobs);
+  }
+  
+  // Function to search for nearby jobs
+  function searchNearbyJobs() {
+    // Get the selected location and distance
+    const locationSelect = document.getElementById('nearby-location-select');
+    const distanceSelect = document.getElementById('distance-select');
+    
+    const location = locationSelect.value;
+    const maxDistance = parseInt(distanceSelect.value);
+    
+    if (!location) {
+      showNearbyJobsError('Please select a location');
+      return;
+    }
+    
+    // Show loading spinner
+    document.getElementById('nearby-jobs-loading').classList.remove('d-none');
+    
+    // Hide previous results and errors
+    document.getElementById('nearby-jobs-results').classList.add('d-none');
+    document.getElementById('map-container').classList.add('d-none');
+    document.getElementById('nearby-jobs-error').classList.add('d-none');
+    
+    // Make API call to get nearby jobs
+    fetch('/nearby-jobs', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ location, max_distance: maxDistance })
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then(data => {
+      // Hide loading spinner
+      document.getElementById('nearby-jobs-loading').classList.add('d-none');
+      
+      // Update heading to show search location
+      document.getElementById('jobs-heading').textContent = `Jobs Near ${location}`;
+      
+      // Display map if available
+      if (data.map_url) {
+        const mapImage = document.getElementById('map-image');
+        mapImage.src = data.map_url;
+        document.getElementById('map-container').classList.remove('d-none');
+      }
+      
+      // Show results container
+      const resultsContainer = document.getElementById('nearby-jobs-results');
+      resultsContainer.classList.remove('d-none');
+      
+      if (data.nearby_jobs && data.nearby_jobs.length > 0) {
+        displayNearbyJobs(data.nearby_jobs);
+        document.getElementById('no-nearby-jobs').classList.add('d-none');
+      } else {
+        document.getElementById('nearby-jobs-container').innerHTML = '';
+        document.getElementById('no-nearby-jobs').classList.remove('d-none');
+      }
+    })
+    .catch(error => {
+      console.error('Error finding nearby jobs:', error);
+      document.getElementById('nearby-jobs-loading').classList.add('d-none');
+      showNearbyJobsError('Failed to find nearby jobs. Please try again later.');
+    });
+  }
+  
+  // Function to display nearby jobs
+  function displayNearbyJobs(jobs) {
+    const container = document.getElementById('nearby-jobs-container');
+    container.innerHTML = '';
+    
+    jobs.forEach((job, index) => {
+      // Create a job card with distance information
+      const card = createJobCard(job, index + 1);
+      container.appendChild(card);
+    });
+  }
+  
+  // Function to show nearby jobs error
+  function showNearbyJobsError(message) {
+    const errorElement = document.getElementById('nearby-jobs-error');
+    errorElement.textContent = message;
+    errorElement.classList.remove('d-none');
+  }
   
   // Handle search form submission
   if (navbarSearchForm) {
@@ -654,7 +807,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   
   // Function to create a job card
-  function createJobCard(job) {
+  function createJobCard(job, index) {
     const card = document.createElement('div');
     card.className = 'card mb-3';
     
@@ -665,8 +818,12 @@ document.addEventListener('DOMContentLoaded', function() {
       formattedDate = date.toLocaleDateString();
     }
     
+    // Add index label if provided (for nearby jobs)
+    const indexLabel = index ? `<span class="badge bg-info position-absolute top-0 start-0 mt-2 ms-2">#${index}</span>` : '';
+    
     card.innerHTML = `
-      <div class="card-body">
+      <div class="card-body position-relative">
+        ${indexLabel}
         <h5 class="card-title">${job.job_role}</h5>
         <h6 class="card-subtitle mb-2 text-muted">${job.business_name}</h6>
         
@@ -676,6 +833,7 @@ document.addEventListener('DOMContentLoaded', function() {
           <p><strong>Description:</strong> ${job.job_description || 'Not provided'}</p>
           <p><strong>Contact:</strong> ${job.contact_number}</p>
           <p><strong>Status:</strong> <span class="badge bg-success">${job.status || 'Open'}</span></p>
+          ${job.distance ? `<p><strong>Distance:</strong> <span class="badge bg-info">${job.distance} km away</span></p>` : ''}
         </div>
         
         <div class="card-footer text-muted">
