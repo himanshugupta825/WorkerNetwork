@@ -55,21 +55,21 @@ document.addEventListener('DOMContentLoaded', function() {
   const noResultsMessage = document.getElementById('no-results-message');
   const voiceSearchError = document.getElementById('voice-search-error');
   
-  // Add event listeners to main buttons
+  // Add event listeners to main buttons - using direct DOM references to avoid variable issues
   document.getElementById('apply-button').addEventListener('click', function() {
-    mainPage.classList.add('d-none');
-    applyPage.classList.remove('d-none');
+    document.getElementById('main-page').classList.add('d-none');
+    document.getElementById('apply-page').classList.remove('d-none');
   });
   
   document.getElementById('post-button').addEventListener('click', function() {
-    mainPage.classList.add('d-none');
-    postJobPage.classList.remove('d-none');
+    document.getElementById('main-page').classList.add('d-none');
+    document.getElementById('post-job-page').classList.remove('d-none');
   });
   
   // Add event listeners to view workers button
   document.getElementById('view-workers-button').addEventListener('click', function() {
-    mainPage.classList.add('d-none');
-    workersPage.classList.remove('d-none');
+    document.getElementById('main-page').classList.add('d-none');
+    document.getElementById('workers-page').classList.remove('d-none');
     
     // Load workers data
     fetchWorkers();
@@ -77,8 +77,8 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Add event listeners to view jobs button
   document.getElementById('view-jobs-button').addEventListener('click', function() {
-    mainPage.classList.add('d-none');
-    jobsPage.classList.remove('d-none');
+    document.getElementById('main-page').classList.add('d-none');
+    document.getElementById('jobs-page').classList.remove('d-none');
     
     // Load jobs data
     fetchJobs();
@@ -87,21 +87,21 @@ document.addEventListener('DOMContentLoaded', function() {
   // Add event listeners to back buttons
   document.querySelectorAll('.btn-back').forEach(function(button) {
     button.addEventListener('click', function() {
-      mainPage.classList.remove('d-none');
-      applyPage.classList.add('d-none');
-      postJobPage.classList.add('d-none');
-      workersPage.classList.add('d-none');
-      jobsPage.classList.add('d-none');
+      document.getElementById('main-page').classList.remove('d-none');
+      document.getElementById('apply-page').classList.add('d-none');
+      document.getElementById('post-job-page').classList.add('d-none');
+      document.getElementById('workers-page').classList.add('d-none');
+      document.getElementById('jobs-page').classList.add('d-none');
       
       // Hide success and error messages
-      applySuccessMessage.style.display = 'none';
-      postSuccessMessage.style.display = 'none';
-      applyErrorMessage.style.display = 'none';
-      postErrorMessage.style.display = 'none';
+      document.getElementById('apply-success').style.display = 'none';
+      document.getElementById('post-success').style.display = 'none';
+      document.getElementById('apply-error').style.display = 'none';
+      document.getElementById('post-error').style.display = 'none';
       
       // Reset forms
-      applyForm.reset();
-      postJobForm.reset();
+      document.getElementById('apply-form').reset();
+      document.getElementById('post-job-form').reset();
     });
   });
   
@@ -134,17 +134,17 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Voice guidance functionality
   voiceGuideBtn.addEventListener('click', function() {
-    // Determine current page
+    // Determine current page using proper ID references
     let currentPage = 'main';
-    if (!mainPage.classList.contains('d-none')) {
+    if (!document.getElementById('main-page').classList.contains('d-none')) {
       currentPage = 'main';
-    } else if (!applyPage.classList.contains('d-none')) {
+    } else if (!document.getElementById('apply-page').classList.contains('d-none')) {
       currentPage = 'apply';
-    } else if (!postJobPage.classList.contains('d-none')) {
+    } else if (!document.getElementById('post-job-page').classList.contains('d-none')) {
       currentPage = 'post-job';
-    } else if (!workersPage.classList.contains('d-none')) {
+    } else if (!document.getElementById('workers-page').classList.contains('d-none')) {
       currentPage = 'workers';
-    } else if (!jobsPage.classList.contains('d-none')) {
+    } else if (!document.getElementById('jobs-page').classList.contains('d-none')) {
       currentPage = 'jobs';
     }
     
@@ -155,17 +155,17 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Visual guide functionality
   visualGuideBtn.addEventListener('click', function() {
-    // Determine current page
+    // Determine current page using proper ID references
     let currentPage = 'main';
-    if (!mainPage.classList.contains('d-none')) {
+    if (!document.getElementById('main-page').classList.contains('d-none')) {
       currentPage = 'main';
-    } else if (!applyPage.classList.contains('d-none')) {
+    } else if (!document.getElementById('apply-page').classList.contains('d-none')) {
       currentPage = 'apply';
-    } else if (!postJobPage.classList.contains('d-none')) {
+    } else if (!document.getElementById('post-job-page').classList.contains('d-none')) {
       currentPage = 'post-job';
-    } else if (!workersPage.classList.contains('d-none')) {
+    } else if (!document.getElementById('workers-page').classList.contains('d-none')) {
       currentPage = 'workers';
-    } else if (!jobsPage.classList.contains('d-none')) {
+    } else if (!document.getElementById('jobs-page').classList.contains('d-none')) {
       currentPage = 'jobs';
     }
     
