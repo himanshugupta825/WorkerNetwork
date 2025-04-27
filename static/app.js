@@ -51,6 +51,9 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('guide-icon').innerHTML = ICONS['guide-icon'];
   document.getElementById('mic-button-icon').innerHTML = ICONS['mic-icon'];
   
+  // Language selection elements
+  const languageOptions = document.querySelectorAll('[data-language]');
+  
   // Voice search elements
   const voiceSearchBtn = document.getElementById('voice-search-btn');
   const voiceStatusText = document.getElementById('voice-status-text');
@@ -442,6 +445,75 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Initialize location dropdown
   setupLocationDropdown();
+  
+  // Set up language selection
+  languageOptions.forEach(option => {
+    option.addEventListener('click', function(e) {
+      e.preventDefault();
+      
+      // Get the selected language
+      const language = this.getAttribute('data-language');
+      
+      // Save the preference
+      localStorage.setItem('preferred-language', language);
+      
+      // Update the UI to show active language
+      languageOptions.forEach(opt => {
+        if (opt.getAttribute('data-language') === language) {
+          opt.classList.add('active');
+          opt.querySelector('i').classList.remove('d-none');
+        } else {
+          opt.classList.remove('active');
+          const icon = opt.querySelector('i');
+          if (icon) icon.classList.add('d-none');
+        }
+      });
+      
+      // TODO: In a real implementation, you would load language-specific content here
+      console.log(`Language changed to: ${language}`);
+      
+      // Display a notification about language change
+      const notification = document.createElement('div');
+      notification.className = 'toast position-fixed bottom-0 end-0 m-3';
+      notification.setAttribute('role', 'alert');
+      notification.setAttribute('aria-live', 'assertive');
+      notification.setAttribute('aria-atomic', 'true');
+      notification.innerHTML = `
+        <div class="toast-header">
+          <i class="bi bi-translate me-2"></i>
+          <strong class="me-auto">Language Changed</strong>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+          Language changed to ${language === 'en' ? 'English' : 'हिंदी (Hindi)'}
+        </div>
+      `;
+      document.body.appendChild(notification);
+      
+      // Show the notification
+      const toast = new bootstrap.Toast(notification);
+      toast.show();
+      
+      // Remove notification after it's hidden
+      notification.addEventListener('hidden.bs.toast', function () {
+        document.body.removeChild(notification);
+      });
+    });
+  });
+  
+  // Load saved language preference
+  const savedLanguage = localStorage.getItem('preferred-language') || 'en';
+  languageOptions.forEach(option => {
+    const lang = option.getAttribute('data-language');
+    if (lang === savedLanguage) {
+      option.classList.add('active');
+      option.querySelector('i').classList.remove('d-none');
+    } else {
+      option.classList.remove('active');
+      const icon = option.querySelector('i');
+      if (icon) icon.classList.add('d-none');
+    }
+  });
   
   // Function to set up nearby jobs functionality
   function setupNearbyJobs() {

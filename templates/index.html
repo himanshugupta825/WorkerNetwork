@@ -17,47 +17,86 @@
     <div class="container">
       <a class="navbar-brand" href="/">GigWorkers</a>
       
-      <!-- Date and Time Display -->
-      <div class="navbar-text text-light d-none d-md-flex align-items-center me-auto">
-        <div class="me-3">
-          <i class="bi bi-calendar-date me-1"></i>
-          <span id="current-date">Loading...</span>
-        </div>
-        <div>
-          <i class="bi bi-clock me-1"></i>
-          <span id="current-time">Loading...</span>
-        </div>
-      </div>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
       
-      <!-- Search Form -->
-      <form class="d-none d-md-flex mx-3 flex-grow-1" id="navbar-search-form">
-        <div class="input-group">
-          <input type="text" class="form-control" placeholder="Search jobs or skills..." id="navbar-search-input">
-          <div class="dropdown location-dropdown">
-            <button class="btn btn-outline-secondary location-indicator dropdown-toggle" type="button" id="location-dropdown-btn" data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="bi bi-geo-alt-fill"></i>
-              <span id="current-location">Select Location</span>
-            </button>
-            <ul class="dropdown-menu location-menu" aria-labelledby="location-dropdown-btn">
-              <li><a class="dropdown-item location-option" href="#" data-location="All Locations">All Locations</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item location-option" href="#" data-location="New York">New York</a></li>
-              <li><a class="dropdown-item location-option" href="#" data-location="Los Angeles">Los Angeles</a></li>
-              <li><a class="dropdown-item location-option" href="#" data-location="Chicago">Chicago</a></li>
-              <li><a class="dropdown-item location-option" href="#" data-location="Houston">Houston</a></li>
-              <li><a class="dropdown-item location-option" href="#" data-location="Phoenix">Phoenix</a></li>
-              <li><a class="dropdown-item location-option" href="#" data-location="Philadelphia">Philadelphia</a></li>
-              <li><a class="dropdown-item location-option" href="#" data-location="San Antonio">San Antonio</a></li>
-              <li><a class="dropdown-item location-option" href="#" data-location="San Diego">San Diego</a></li>
-              <li><a class="dropdown-item location-option" href="#" data-location="Dallas">Dallas</a></li>
-              <li><a class="dropdown-item location-option" href="#" data-location="San Jose">San Jose</a></li>
+      <div class="collapse navbar-collapse" id="navbarContent">
+        <!-- Main Navigation Icons -->
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link active" href="/" aria-current="page">
+              <i class="bi bi-house-fill"></i> Home
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#about">
+              <i class="bi bi-info-circle-fill"></i> About
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#learn">
+              <i class="bi bi-book-fill"></i> Learn
+            </a>
+          </li>
+          <!-- Language Selection Dropdown -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="bi bi-translate"></i> Language
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="languageDropdown">
+              <li><a class="dropdown-item active" href="#" data-language="en">
+                <i class="bi bi-check2 me-2"></i> English
+              </a></li>
+              <li><a class="dropdown-item" href="#" data-language="hi">
+                <i class="bi bi-check2 me-2 d-none"></i> हिंदी (Hindi)
+              </a></li>
             </ul>
+          </li>
+        </ul>
+      
+        <!-- Date and Time Display -->
+        <div class="navbar-text text-light d-none d-md-flex align-items-center me-auto">
+          <div class="me-3">
+            <i class="bi bi-calendar-date me-1"></i>
+            <span id="current-date">Loading...</span>
           </div>
-          <button class="btn btn-primary" type="submit">
-            <i class="bi bi-search"></i>
-          </button>
+          <div>
+            <i class="bi bi-clock me-1"></i>
+            <span id="current-time">Loading...</span>
+          </div>
         </div>
-      </form>
+        
+        <!-- Search Form -->
+        <form class="d-none d-md-flex mx-3 flex-grow-1" id="navbar-search-form">
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="Search jobs or skills..." id="navbar-search-input">
+            <div class="dropdown location-dropdown">
+              <button class="btn btn-outline-secondary location-indicator dropdown-toggle" type="button" id="location-dropdown-btn" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-geo-alt-fill"></i>
+                <span id="current-location">Select Location</span>
+              </button>
+              <ul class="dropdown-menu location-menu" aria-labelledby="location-dropdown-btn">
+                <li><a class="dropdown-item location-option" href="#" data-location="All Locations">All Locations</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item location-option" href="#" data-location="New York, NY">New York, NY</a></li>
+                <li><a class="dropdown-item location-option" href="#" data-location="Los Angeles, CA">Los Angeles, CA</a></li>
+                <li><a class="dropdown-item location-option" href="#" data-location="Chicago, IL">Chicago, IL</a></li>
+                <li><a class="dropdown-item location-option" href="#" data-location="Houston, TX">Houston, TX</a></li>
+                <li><a class="dropdown-item location-option" href="#" data-location="Phoenix, AZ">Phoenix, AZ</a></li>
+                <li><a class="dropdown-item location-option" href="#" data-location="Philadelphia, PA">Philadelphia, PA</a></li>
+                <li><a class="dropdown-item location-option" href="#" data-location="San Antonio, TX">San Antonio, TX</a></li>
+                <li><a class="dropdown-item location-option" href="#" data-location="San Diego, CA">San Diego, CA</a></li>
+                <li><a class="dropdown-item location-option" href="#" data-location="Dallas, TX">Dallas, TX</a></li>
+                <li><a class="dropdown-item location-option" href="#" data-location="San Jose, CA">San Jose, CA</a></li>
+              </ul>
+            </div>
+            <button class="btn btn-primary" type="submit">
+              <i class="bi bi-search"></i>
+            </button>
+          </div>
+        </form>
+      </div><!-- End navbar-collapse -->
       
       <div class="ms-auto d-flex gap-2">
         <!-- User info (shown when logged in) -->
