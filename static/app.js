@@ -12,6 +12,16 @@ document.addEventListener('DOMContentLoaded', function() {
   const applyErrorMessage = document.getElementById('apply-error');
   const postErrorMessage = document.getElementById('post-error');
   
+  // Elements for date, time and location display
+  const currentDateElement = document.getElementById('current-date');
+  const currentTimeElement = document.getElementById('current-time');
+  const currentLocationElement = document.getElementById('current-location');
+  const locationDisplay = document.getElementById('location-display');
+  
+  // Search form elements
+  const navbarSearchForm = document.getElementById('navbar-search-form');
+  const navbarSearchInput = document.getElementById('navbar-search-input');
+  
   // Get worker and job listing elements
   const workersContainer = document.getElementById('workers-container');
   const jobsContainer = document.getElementById('jobs-container');
@@ -295,6 +305,124 @@ document.addEventListener('DOMContentLoaded', function() {
       themeToggleBtn.classList.remove('btn-outline-dark');
       themeToggleBtn.classList.add('btn-outline-light');
     }
+  }
+  
+  // Function to update date and time
+  function updateDateTime() {
+    const now = new Date();
+    
+    // Format date: Apr 27, 2025
+    const dateOptions = { year: 'numeric', month: 'short', day: 'numeric' };
+    const formattedDate = now.toLocaleDateString('en-US', dateOptions);
+    
+    // Format time: 14:30:45
+    const timeOptions = { hour: '2-digit', minute: '2-digit', hour12: true };
+    const formattedTime = now.toLocaleTimeString('en-US', timeOptions);
+    
+    // Update elements
+    if (currentDateElement) currentDateElement.textContent = formattedDate;
+    if (currentTimeElement) currentTimeElement.textContent = formattedTime;
+  }
+  
+  // Update date and time initially and then every second
+  updateDateTime();
+  setInterval(updateDateTime, 60000); // Update every minute
+  
+  // Function to get user's location
+  function getUserLocation() {
+    if (navigator.geolocation && currentLocationElement) {
+      currentLocationElement.textContent = "Detecting...";
+      
+      navigator.geolocation.getCurrentPosition(
+        function(position) {
+          // Use reverse geocoding to get location name
+          const latitude = position.coords.latitude;
+          const longitude = position.coords.longitude;
+          
+          // For demo purposes, just show coordinates and then fetch city name
+          fetchLocationName(latitude, longitude);
+        },
+        function(error) {
+          console.error("Error getting location:", error);
+          currentLocationElement.textContent = "Unknown";
+        }
+      );
+    } else if (currentLocationElement) {
+      currentLocationElement.textContent = "Not supported";
+    }
+  }
+  
+  // Function to fetch location name from coordinates
+  function fetchLocationName(latitude, longitude) {
+    // In a real app, you would use a geocoding API like Google Maps or OpenStreetMap
+    // For this demo, we'll just use a simple location
+    setTimeout(() => {
+      if (currentLocationElement) {
+        currentLocationElement.textContent = "New York";
+      }
+    }, 1000);
+  }
+  
+  // Initialize location if the element exists
+  if (currentLocationElement) {
+    getUserLocation();
+    
+    // Allow user to refresh location by clicking on the location display
+    if (locationDisplay) {
+      locationDisplay.addEventListener('click', function() {
+        getUserLocation();
+      });
+    }
+  }
+  
+  // Handle search form submission
+  if (navbarSearchForm) {
+    navbarSearchForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const searchQuery = navbarSearchInput.value.trim();
+      
+      if (searchQuery) {
+        console.log('Searching for:', searchQuery);
+        
+        // Navigate to jobs page and show loading indicator
+        document.getElementById('main-page').classList.add('d-none');
+        document.getElementById('jobs-page').classList.remove('d-none');
+        
+        // Clear previous content and show loading
+        jobsContainer.innerHTML = '';
+        jobsLoading.classList.remove('d-none');
+        jobsError.classList.add('d-none');
+        noJobsMessage.classList.add('d-none');
+        
+        // Fetch jobs with the search query
+        fetch(`/jobs?query=${encodeURIComponent(searchQuery)}`)
+          .then(response => response.json())
+          .then(data => {
+            jobsLoading.classList.add('d-none');
+            
+            if (data.error) {
+              jobsError.textContent = data.error;
+              jobsError.classList.remove('d-none');
+            } else if (data.jobs && data.jobs.length > 0) {
+              // Display jobs
+              data.jobs.forEach(job => {
+                const jobCard = createJobCard(job);
+                jobsContainer.appendChild(jobCard);
+              });
+            } else {
+              // Show no jobs message
+              noJobsMessage.classList.remove('d-none');
+            }
+          })
+          .catch(error => {
+            console.error('Error searching jobs:', error);
+            jobsLoading.classList.add('d-none');
+            jobsError.textContent = 'Failed to search jobs. Please try again.';
+            jobsError.classList.remove('d-none');
+          });
+      }
+    });
   }
   
   // Handle apply form submission

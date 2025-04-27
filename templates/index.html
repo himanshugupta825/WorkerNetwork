@@ -16,6 +16,33 @@
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
       <a class="navbar-brand" href="/">GigWorkers</a>
+      
+      <!-- Date and Time Display -->
+      <div class="navbar-text text-light d-none d-md-flex align-items-center me-auto">
+        <div class="me-3">
+          <i class="bi bi-calendar-date me-1"></i>
+          <span id="current-date">Loading...</span>
+        </div>
+        <div>
+          <i class="bi bi-clock me-1"></i>
+          <span id="current-time">Loading...</span>
+        </div>
+      </div>
+      
+      <!-- Search Form -->
+      <form class="d-none d-md-flex mx-3 flex-grow-1" id="navbar-search-form">
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="Search jobs or skills..." id="navbar-search-input">
+          <span class="input-group-text location-indicator" id="location-display" title="Current location">
+            <i class="bi bi-geo-alt-fill"></i>
+            <span id="current-location">Loading...</span>
+          </span>
+          <button class="btn btn-primary" type="submit">
+            <i class="bi bi-search"></i>
+          </button>
+        </div>
+      </form>
+      
       <div class="ms-auto d-flex gap-2">
         <!-- User info (shown when logged in) -->
         <div id="user-info" class="d-none d-flex gap-2 align-items-center">

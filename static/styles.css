@@ -535,3 +535,51 @@ body {
   background-color: rgba(var(--bs-info-rgb), 0.2);
   border-color: rgba(var(--bs-info-rgb), 0.5);
 }
+
+/* Location indicator */
+.location-indicator {
+  background-color: rgba(var(--bs-info-rgb), 0.1);
+  border-color: rgba(var(--bs-info-rgb), 0.2);
+  color: var(--bs-info);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.85rem;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.location-indicator:hover {
+  background-color: rgba(var(--bs-info-rgb), 0.2);
+}
+
+.location-indicator i {
+  color: var(--bs-info);
+  margin-right: 4px;
+}
+
+/* Navbar search form */
+#navbar-search-form {
+  transition: all 0.3s ease;
+}
+
+#navbar-search-input:focus {
+  box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25);
+}
+
+/* Date and time display */
+#current-date, #current-time {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+@media (max-width: 768px) {
+  #navbar-search-form {
+    display: none !important;
+  }
+  
+  .navbar-text {
+    display: none !important;
+  }
+}
