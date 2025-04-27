@@ -9,6 +9,7 @@ import json
 from validators import validate_worker_data, validate_job_data, validate_registration_data, validate_login_data
 from models import db, Worker, Job, User
 import voice_search
+import maps
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
@@ -41,6 +42,9 @@ def load_user(user_id):
 
 # Enable CORS for all routes
 CORS(app)
+
+# Google Maps API Key
+GOOGLE_MAPS_API_KEY = os.environ.get('GOOGLE_MAPS_API_KEY')
 
 # Create database tables
 with app.app_context():
@@ -305,6 +309,64 @@ def visual_guide(page):
     })
     
     return jsonify(guide)
+
+# Nearby jobs route
+@app.route('/nearby-jobs', methods=['POST'])
+def get_nearby_jobs():
+    """Get jobs near a specified location"""
+    try:
+        data = request.get_json()
+        
+        if not data or 'location' not in data:
+            return jsonify({"error": "No location provided"}), 400
+            
+        location = data['location']
+        max_distance = data.get('max_distance', 50)  # Default to 50km radius
+        
+        logger.info(f"Finding jobs near location: {location}")
+        
+        # Geocode the location to get coordinates
+        user_location = maps.geocode_address(location)
+        
+        if not user_location:
+            return jsonify({"error": "Could not geocode the provided location"}), 400
+            
+        # Get all jobs from the database
+        jobs = Job.query.filter_by(status='open').all()
+        jobs_list = [job.to_dict() for job in jobs]
+        
+        # Find nearby jobs
+        nearby_jobs = maps.find_nearby_jobs(user_location, jobs_list, max_distance)
+        
+        # Generate map URL if there are nearby jobs
+        map_url = None
+        if nearby_jobs:
+            # Prepare markers for map
+            markers = [{'lat': user_location['lat'], 'lng': user_location['lng'], 'label': 'You'}]
+            
+            # Add job markers (limit to first 9 for clarity on map)
+            for i, job in enumerate(nearby_jobs[:9]):
+                if 'coords' in job:
+                    markers.append({
+                        'lat': job['coords']['lat'],
+                        'lng': job['coords']['lng'],
+                        'label': str(i+1)
+                    })
+            
+            # Generate the map URL
+            map_url = maps.generate_map_url(user_location['lat'], user_location['lng'], markers)
+        
+        return jsonify({
+            "message": "Nearby jobs found",
+            "user_location": user_location,
+            "count": len(nearby_jobs),
+            "nearby_jobs": nearby_jobs,
+            "map_url": map_url
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"Error finding nearby jobs: {str(e)}")
+        return jsonify({"error": "An error occurred while finding nearby jobs"}), 500
 
 # Voice search route
 @app.route('/voice-search', methods=['POST'])
