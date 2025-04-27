@@ -607,3 +607,72 @@ body {
     display: none !important;
   }
 }
+
+/* Worker card styling */
+.worker-card {
+  border-left: 4px solid var(--primary-color);
+}
+
+.worker-avatar {
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+.call-btn {
+  border-radius: 20px;
+  transition: all 0.3s;
+}
+
+.call-btn:hover {
+  transform: scale(1.1);
+}
+
+/* Confirmation slider styling */
+.confirmation-slider-container {
+  background-color: rgba(0, 0, 0, 0.05);
+  padding: 15px;
+  border-radius: 8px;
+}
+
+input[type="range"] {
+  height: 8px;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  background: var(--primary-color);
+  cursor: pointer;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+}
+
+input[type="range"]::-moz-range-thumb {
+  background: var(--primary-color);
+  cursor: pointer;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+}
+
+/* Job apply button styling */
+.apply-to-job-btn {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  border-radius: 20px;
+  transition: all 0.3s;
+}
+
+.apply-to-job-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.contact-worker-btn {
+  border-radius: 20px;
+  transition: all 0.3s;
+}
+
+.contact-worker-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}

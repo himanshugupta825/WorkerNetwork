@@ -848,7 +848,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Function to create a worker card
   function createWorkerCard(worker) {
     const card = document.createElement('div');
-    card.className = 'card mb-3';
+    card.className = 'card mb-3 worker-card';
     
     // Format the date if available
     let formattedDate = 'Unknown';
@@ -857,25 +857,183 @@ document.addEventListener('DOMContentLoaded', function() {
       formattedDate = date.toLocaleDateString();
     }
     
+    // Generate random color for avatar background
+    const colors = ['#4CAF50', '#2196F3', '#9C27B0', '#FF9800', '#E91E63', '#00BCD4'];
+    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+    
+    // Get initials for avatar
+    const initials = worker.name.split(' ').map(name => name.charAt(0)).join('').toUpperCase();
+    
     card.innerHTML = `
       <div class="card-body">
-        <h5 class="card-title">${worker.name}</h5>
-        <h6 class="card-subtitle mb-2 text-muted">${worker.skill}</h6>
-        
-        <div class="card-text">
-          <p><strong>Location:</strong> ${worker.location || 'Not specified'}</p>
-          <p><strong>Experience:</strong> ${worker.experience || 'Not specified'}</p>
-          <p><strong>Education:</strong> ${worker.education || 'Not specified'}</p>
-          <p><strong>Contact:</strong> ${worker.phone}</p>
+        <div class="d-flex">
+          <div class="worker-avatar me-3" style="background-color: ${randomColor}; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.2rem;">
+            ${initials}
+          </div>
+          <div>
+            <h5 class="card-title">${worker.name}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">${worker.skill}</h6>
+          </div>
         </div>
         
-        <div class="card-footer text-muted">
-          Applied on: ${formattedDate}
+        <div class="card-text mt-3">
+          <p>
+            <i class="bi bi-geo-alt-fill text-primary me-2"></i>
+            <strong>Location:</strong> ${worker.location || 'Not specified'}
+          </p>
+          <p>
+            <i class="bi bi-briefcase-fill text-primary me-2"></i>
+            <strong>Experience:</strong> ${worker.experience || 'Not specified'}
+          </p>
+          <p>
+            <i class="bi bi-book-fill text-primary me-2"></i>
+            <strong>Education:</strong> ${worker.education || 'Not specified'}
+          </p>
+          <div class="d-flex align-items-center">
+            <p class="mb-0 me-2">
+              <i class="bi bi-telephone-fill text-primary me-2"></i>
+              <strong>Contact:</strong> ${worker.phone}
+            </p>
+            <a href="tel:${worker.phone.replace(/\D/g,'')}" class="btn btn-sm btn-success call-btn">
+              <i class="bi bi-telephone-fill"></i> Call
+            </a>
+          </div>
+        </div>
+        
+        <div class="d-flex justify-content-between align-items-center mt-3">
+          <div class="text-muted small">
+            <i class="bi bi-calendar-event me-1"></i> Profile created: ${formattedDate}
+          </div>
+          <button class="btn btn-primary btn-sm contact-worker-btn" data-worker-id="${worker.id || '0'}">
+            <i class="bi bi-chat-dots-fill"></i> Contact
+          </button>
         </div>
       </div>
     `;
     
+    // Add event listener for contact button
+    setTimeout(() => {
+      const contactBtn = card.querySelector('.contact-worker-btn');
+      if (contactBtn) {
+        contactBtn.addEventListener('click', function() {
+          showWorkerContactModal(worker);
+        });
+      }
+    }, 0);
+    
     return card;
+  }
+  
+  // Function to show worker contact modal
+  function showWorkerContactModal(worker) {
+    // Create modal dynamically if it doesn't exist
+    let modal = document.getElementById('worker-contact-modal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.className = 'modal fade';
+      modal.id = 'worker-contact-modal';
+      modal.setAttribute('tabindex', '-1');
+      modal.setAttribute('aria-labelledby', 'worker-contact-modal-label');
+      modal.setAttribute('aria-hidden', 'true');
+      
+      modal.innerHTML = `
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="worker-contact-modal-label">Contact Worker</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div class="worker-info mb-3"></div>
+              <form id="worker-contact-form">
+                <div class="mb-3">
+                  <label for="job-description" class="form-label">Job Description</label>
+                  <textarea class="form-control" id="job-description" rows="3" placeholder="Describe the job opportunity..."></textarea>
+                </div>
+                <div class="mb-3">
+                  <label for="employer-name" class="form-label">Your Name</label>
+                  <input type="text" class="form-control" id="employer-name" placeholder="Enter your name">
+                </div>
+                <div class="mb-3">
+                  <label for="employer-contact" class="form-label">Your Contact Number</label>
+                  <input type="tel" class="form-control" id="employer-contact" placeholder="Enter your contact number">
+                </div>
+                <div class="confirmation-slider-container mt-3 mb-3">
+                  <label for="contact-confirmation-slider" class="form-label">Slide to confirm</label>
+                  <input type="range" class="form-range" id="contact-confirmation-slider" min="0" max="100" value="0">
+                  <div class="d-flex justify-content-between">
+                    <small>Slide right to confirm</small>
+                    <small class="contact-confirmation-value">0%</small>
+                  </div>
+                </div>
+                <div class="alert alert-success d-none" id="worker-contact-success">
+                  Message sent successfully! The worker will contact you soon.
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <button type="button" class="btn btn-primary" id="send-message-btn" disabled>Send Message</button>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(modal);
+      
+      // Set up the slider functionality
+      const slider = document.getElementById('contact-confirmation-slider');
+      const confirmBtn = document.getElementById('send-message-btn');
+      const confirmationValue = document.querySelector('.contact-confirmation-value');
+      
+      slider.addEventListener('input', function() {
+        confirmationValue.textContent = `${this.value}%`;
+        if (parseInt(this.value) >= 90) {
+          confirmBtn.disabled = false;
+        } else {
+          confirmBtn.disabled = true;
+        }
+      });
+      
+      // Set up the send button functionality
+      confirmBtn.addEventListener('click', function() {
+        // Here you would normally send the message to the server
+        // For now, we'll just show a success message
+        document.getElementById('worker-contact-success').classList.remove('d-none');
+        
+        // Reset form and slider
+        document.getElementById('worker-contact-form').reset();
+        slider.value = 0;
+        confirmationValue.textContent = '0%';
+        confirmBtn.disabled = true;
+        
+        // Close the modal after a delay
+        setTimeout(() => {
+          const modalInstance = bootstrap.Modal.getInstance(modal);
+          modalInstance.hide();
+          document.getElementById('worker-contact-success').classList.add('d-none');
+        }, 2000);
+      });
+    }
+    
+    // Update modal content with worker details
+    const workerInfo = modal.querySelector('.worker-info');
+    workerInfo.innerHTML = `
+      <div class="d-flex align-items-center">
+        <div class="me-3">
+          <i class="bi bi-person-circle fs-1 text-primary"></i>
+        </div>
+        <div>
+          <h5 class="mb-1">${worker.name}</h5>
+          <p class="mb-1 text-muted">${worker.skill}</p>
+          <p class="mb-0 small">Location: ${worker.location || 'Not specified'}</p>
+        </div>
+      </div>
+    `;
+    
+    // Show the modal
+    const modalInstance = new bootstrap.Modal(modal);
+    modalInstance.show();
   }
   
   // Function to create a job card
@@ -903,18 +1061,125 @@ document.addEventListener('DOMContentLoaded', function() {
           <p><strong>Payment:</strong> ${job.payment}</p>
           <p><strong>Location:</strong> ${job.location || 'Not specified'}</p>
           <p><strong>Description:</strong> ${job.job_description || 'Not provided'}</p>
-          <p><strong>Contact:</strong> ${job.contact_number}</p>
-          <p><strong>Status:</strong> <span class="badge bg-success">${job.status || 'Open'}</span></p>
+          <div class="contact-info d-flex align-items-center">
+            <p class="mb-0 me-2"><strong>Contact:</strong> ${job.contact_number}</p>
+            <a href="tel:${job.contact_number.replace(/\D/g,'')}" class="btn btn-sm btn-success call-btn">
+              <i class="bi bi-telephone-fill"></i> Call
+            </a>
+          </div>
+          <p class="mt-2"><strong>Status:</strong> <span class="badge bg-success">${job.status || 'Open'}</span></p>
           ${job.distance ? `<p><strong>Distance:</strong> <span class="badge bg-info">${job.distance} km away</span></p>` : ''}
         </div>
         
-        <div class="card-footer text-muted">
-          Posted on: ${formattedDate}
+        <div class="d-flex justify-content-between align-items-center mt-3">
+          <div class="card-footer text-muted">
+            Posted on: ${formattedDate}
+          </div>
+          <button class="btn btn-primary apply-to-job-btn" data-job-id="${job.id}">
+            <i class="bi bi-check-circle-fill"></i> Apply Now
+          </button>
         </div>
       </div>
     `;
     
+    // Add event listener to the apply button after the card is created
+    setTimeout(() => {
+      const applyBtn = card.querySelector('.apply-to-job-btn');
+      if (applyBtn) {
+        applyBtn.addEventListener('click', function() {
+          showJobApplicationModal(job);
+        });
+      }
+    }, 0);
+    
     return card;
+  }
+  
+  // Function to show job application modal
+  function showJobApplicationModal(job) {
+    // Create modal dynamically if it doesn't exist
+    let modal = document.getElementById('job-application-modal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.className = 'modal fade';
+      modal.id = 'job-application-modal';
+      modal.setAttribute('tabindex', '-1');
+      modal.setAttribute('aria-labelledby', 'job-application-modal-label');
+      modal.setAttribute('aria-hidden', 'true');
+      
+      modal.innerHTML = `
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="job-application-modal-label">Apply for Job</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <p class="job-details"></p>
+              <div class="confirmation-slider-container mt-3 mb-3">
+                <label for="confirmation-slider" class="form-label">Slide to confirm your application</label>
+                <input type="range" class="form-range" id="confirmation-slider" min="0" max="100" value="0">
+                <div class="d-flex justify-content-between">
+                  <small>Slide right to confirm</small>
+                  <small class="confirmation-value">0%</small>
+                </div>
+              </div>
+              <div class="alert alert-success d-none" id="job-application-success">
+                Application successful! The employer will contact you soon.
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <button type="button" class="btn btn-primary" id="confirm-application-btn" disabled>Confirm Application</button>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(modal);
+      
+      // Set up the slider functionality
+      const slider = document.getElementById('confirmation-slider');
+      const confirmBtn = document.getElementById('confirm-application-btn');
+      const confirmationValue = document.querySelector('.confirmation-value');
+      
+      slider.addEventListener('input', function() {
+        confirmationValue.textContent = `${this.value}%`;
+        if (parseInt(this.value) >= 90) {
+          confirmBtn.disabled = false;
+        } else {
+          confirmBtn.disabled = true;
+        }
+      });
+      
+      // Set up the confirm button functionality
+      confirmBtn.addEventListener('click', function() {
+        // Here you would normally send the application to the server
+        // For now, we'll just show a success message
+        document.getElementById('job-application-success').classList.remove('d-none');
+        slider.value = 0;
+        confirmationValue.textContent = '0%';
+        confirmBtn.disabled = true;
+        
+        // Close the modal after a delay
+        setTimeout(() => {
+          const modalInstance = bootstrap.Modal.getInstance(modal);
+          modalInstance.hide();
+          document.getElementById('job-application-success').classList.add('d-none');
+        }, 2000);
+      });
+    }
+    
+    // Update modal content with job details
+    const jobDetails = modal.querySelector('.job-details');
+    jobDetails.innerHTML = `
+      You are applying for <strong>${job.job_role}</strong> at 
+      <strong>${job.business_name}</strong> in ${job.location || 'Not specified'}.
+    `;
+    
+    // Show the modal
+    const modalInstance = new bootstrap.Modal(modal);
+    modalInstance.show();
   }
   
   // Web Speech API voice recognition
