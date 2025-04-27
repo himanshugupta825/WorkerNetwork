@@ -753,9 +753,8 @@ document.addEventListener('DOMContentLoaded', function() {
       });
   }
   
-  // Reference welcome section and main page
+  // Reference welcome section
   const welcomeSection = document.getElementById('welcome-section');
-  const mainPage = document.getElementById('main-page');
   
   // Function to show welcome screen (when not logged in)
   function showAuthButtons() {
@@ -765,8 +764,8 @@ document.addEventListener('DOMContentLoaded', function() {
     if (welcomeSection) {
       welcomeSection.classList.remove('d-none');
     }
-    if (mainPage) {
-      mainPage.classList.add('d-none');
+    if (document.getElementById('main-page')) {
+      document.getElementById('main-page').classList.add('d-none');
     }
   }
   
@@ -779,8 +778,8 @@ document.addEventListener('DOMContentLoaded', function() {
     if (welcomeSection) {
       welcomeSection.classList.add('d-none');
     }
-    if (mainPage) {
-      mainPage.classList.remove('d-none');
+    if (document.getElementById('main-page')) {
+      document.getElementById('main-page').classList.remove('d-none');
     }
   }
   
